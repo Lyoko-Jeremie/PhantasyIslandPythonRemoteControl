@@ -70,9 +70,10 @@ class FH0A:
         """移动到指定坐标处"""
         self.p(port).goto(x, y, h)
 
-    def flip(self, direction: str):
+    def flip(self, port: str, direction: str):
         """
         flip函数用于控制无人机翻滚
+        :param port:
         :param direction: 翻滚方向（f前 b后 l左 r右）
         """
         if direction == 'f':

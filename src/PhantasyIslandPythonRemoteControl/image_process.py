@@ -7,7 +7,7 @@ import numpy as np
 
 
 # https://jdhao.github.io/2020/03/17/base64_opencv_pil_image_conversion/
-def read_b64_img(uri: str):
+def read_b64_img(uri: str | None) -> cv2.Mat | None:
     """
     从仿真平台中返回的无人机相机图像是一个标准html编码的png/jpg图像
     本函数使用opencv的cv::imdecode函数将其解析为cv::Mat图像数据

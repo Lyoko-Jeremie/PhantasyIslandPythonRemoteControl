@@ -72,9 +72,11 @@ def send_cmd_volatile(s: str):
 def get_all_airplane_status():
     error = None
     try:
-        r = requests.get('http://' + remote_location + '/ECU_HTTP/getAllAirplaneStatus', timeout=5)
+        r = requests.get('http://' + remote_location + '/ECU_HTTP/requestPullAllAirplaneState', timeout=5)
         # print(r.status_code)
+        # print('get_all_airplane_status r.text', r.text)
         j = json.loads(r.text)
+        # print('get_all_airplane_status', j)
         return j
     except requests.exceptions.ConnectionError as e:
         print('ConnectionError Cannot Connect to PhantasyIsland, Max retries exceeded.', file=sys.stderr)
@@ -86,6 +88,32 @@ def get_all_airplane_status():
         pass
     if error is not None:
         raise Exception('ConnectionError Cannot Connect to PhantasyIsland, Max retries exceeded.')
+
+    pass
+
+
+def get_airplane_camera_image(port: str, camera: str) -> str | None:
+    """
+    获取指定无人机的摄像头图像
+    :param port: 无人机的 keyName
+    :param camera: 'down' 或 'front'
+    :return: str | None 图像的 base64 编码字符串
+    """
+    try:
+        r = requests.get('http://' + remote_location + f'/ECU_HTTP/requestPullImage?flyPort={port}&imageType={camera}',
+                         timeout=5)
+        j = json.loads(r.text)
+        if j['ok'] is True:
+            return j['imgDataString']
+        else:
+            return None
+    except requests.exceptions.ConnectionError as e:
+        print('ConnectionError Cannot Connect to PhantasyIsland, Max retries exceeded.', file=sys.stderr)
+        try:
+            print('  ===>>>  ' + str(e.args[0].reason), file=sys.stderr)
+        except:
+            print(e, file=sys.stderr)
+        return None
 
 
 def process_airplane(j: Dict[str, any]):
@@ -107,10 +135,10 @@ def process_airplane(j: Dict[str, any]):
             # print(air['cameraDown'])
             # print(air['cameraFront'])
             camera_front = air['cameraFront']
-            camera_front_img_data_string = camera_front['imgDataString']
+            camera_front_img_data_string = camera_front.get('imgDataString')
             status['cameraFront'] = camera_front_img_data_string
             camera_down = air['cameraDown']
-            camera_down_img_data_string = camera_down['imgDataString']
+            camera_down_img_data_string = camera_down.get('imgDataString')
             status['cameraDown'] = camera_down_img_data_string
             # # print(cameraFront['imgDataString'])
             # img = read_b64_img(cameraFront['imgDataString'])

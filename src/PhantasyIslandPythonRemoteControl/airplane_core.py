@@ -1,6 +1,7 @@
 import dataclasses
 from typing import Dict
 
+from .http_layer import get_airplane_camera_image
 from .image_process import read_b64_img
 
 @dataclasses.dataclass()
@@ -50,17 +51,19 @@ class AirplaneCore(object):
     def get_camera_front_img(self):
         """
         获取前置摄像头图像
-        :return:  cv::Mat
+        :return:  cv2::Mat | None
         """
-        return read_b64_img(self.cameraFront)
+        # return read_b64_img(self.cameraFront)
+        return read_b64_img(get_airplane_camera_image(self.keyName, 'front'))
         pass
 
     def get_camera_down_img(self):
         """
         获取下置摄像头图像
-        :return:  cv::Mat
+        :return:  cv2::Mat | None
         """
-        return read_b64_img(self.cameraDown)
+        # return read_b64_img(self.cameraDown)
+        return read_b64_img(get_airplane_camera_image(self.keyName, 'down'))
         pass
 
     pass

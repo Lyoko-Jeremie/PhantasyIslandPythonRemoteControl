@@ -196,7 +196,7 @@ def main():
     m: AirplaneManager = get_airplane_manager()
     m.flush()
     m.start()
-    for port in ['COM3']:
+    for port in ['FH0A:COM3']:
         m.flush()
         a: AirplaneController = m.get_airplane(port)
         if a:
@@ -206,8 +206,12 @@ def main():
             a.use_fast_mode(False)
             while True:
                 f_img = a.get_camera_front_img()
+                d_img = a.get_camera_down_img()
+                if f_img is None:
+                    continue
                 cv2.imshow(f'{a.keyName} front', f_img)
-                cv2.imshow(f'{a.keyName} down', a.get_camera_down_img())
+                if d_img is not None:
+                    cv2.imshow(f'{a.keyName} down', d_img)
                 cv2.waitKey(20)
                 b, g, r = cv2.split(f_img)
                 br = cv2.subtract(b, r)

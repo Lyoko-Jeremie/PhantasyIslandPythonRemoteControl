@@ -1,8 +1,11 @@
 import dataclasses
+import typing
 from typing import Dict
 
 from .http_layer import get_airplane_camera_image
 from .image_process import read_b64_img
+from .image_receiver_mook import ImageReceiver
+
 
 @dataclasses.dataclass()
 class AirplaneFlyStatus(object):
@@ -47,6 +50,34 @@ class AirplaneCore(object):
     status: AirplaneFlyStatus
     cameraFront: str
     cameraDown: str
+
+    # 声明字段，且不让其参与 __init__
+    image_receiver: ImageReceiver = dataclasses.field(init=False)
+
+    def __post_init__(self):
+        # 在这里实例化，此时可以安全地将 self 传给 ImageReceiver
+        self.receiver = ImageReceiver(self)
+        pass
+
+    def cap_image(
+            self,
+            user_receive_callback: typing.Optional[typing.Callable[[bytes], None]] = None,
+            user_progress_callback: typing.Optional[typing.Callable[[int, int], None]] = None,
+    ):
+        self.image_receiver.send_cap_image(user_receive_callback, user_progress_callback)
+        pass
+
+    def get_image_transfer_progress(self):
+        self.image_receiver.get_transfer_progress()
+        pass
+
+    def is_image_transfer_in_progress(self):
+        self.image_receiver.is_transfer_in_progress()
+        pass
+
+    def get_latest_image(self):
+        self.image_receiver.get_latest_image()
+        pass
 
     def get_camera_front_img(self):
         """

@@ -98,3 +98,9 @@ class ImageReceiver:
             if self.image_instance is None:
                 return None
             return self.image_instance.progress_count
+
+    def is_transfer_in_progress(self):
+        with self._lock:
+            if self.image_instance is None:
+                return False
+            return not self.image_instance.ok

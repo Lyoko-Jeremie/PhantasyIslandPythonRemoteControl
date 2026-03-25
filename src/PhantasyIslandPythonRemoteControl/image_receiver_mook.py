@@ -72,7 +72,7 @@ class ImageReceiver:
                     pass
                 pass
 
-            if self.image_instance.id != self.now_loading_id and self.image_instance.progress_count >= self.image_instance.total_count and self.user_receive_callback:
+            if self.image_instance.id == self.now_loading_id and self.image_instance.progress_count >= self.image_instance.total_count and self.user_receive_callback:
                 self.user_receive_callback(self.image_instance.img)
 
             pass

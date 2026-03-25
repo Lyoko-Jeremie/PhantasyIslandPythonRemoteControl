@@ -13,6 +13,7 @@ if typing.TYPE_CHECKING:
 class ImageInfo:
     img: bytes
     id: int
+    total_count: int
     progress_count: int = 0
     ok: bool = False
     pass
@@ -29,6 +30,8 @@ class ImageReceiver:
 
     user_receive_callback: typing.Callable[[bytes], None] | None = None
     user_progress_callback: typing.Callable[[int, int], None] | None = None
+
+    mook_time = 3
 
     def __init__(self, airplane: AirplaneCore):
         self.airplane = airplane
@@ -48,9 +51,10 @@ class ImageReceiver:
                 self.image_instance = ImageInfo(
                     img=self.airplane.get_camera_down_img(),
                     id=self._cmd_id_counter,
+                    total_count=self.mook_time * 100,   # time.sleep(0.01)
                 )
 
-            while self.image_instance.progress_count < 100:
+            while self.image_instance.progress_count < self.image_instance.total_count:
                 time.sleep(0.01)
                 with self._lock:
                     if self.image_instance.id != self.now_loading_id:
@@ -59,7 +63,7 @@ class ImageReceiver:
                     pass
 
                 if self.user_progress_callback:
-                    self.user_progress_callback(self.image_instance.progress_count, 100)
+                    self.user_progress_callback(self.image_instance.progress_count, self.image_instance.total_count)
                 pass
 
             with self._lock:
@@ -68,7 +72,7 @@ class ImageReceiver:
                     pass
                 pass
 
-            if self.image_instance.id != self.now_loading_id and self.image_instance.progress_count >= 100 and self.user_receive_callback:
+            if self.image_instance.id != self.now_loading_id and self.image_instance.progress_count >= self.image_instance.total_count and self.user_receive_callback:
                 self.user_receive_callback(self.image_instance.img)
 
             pass

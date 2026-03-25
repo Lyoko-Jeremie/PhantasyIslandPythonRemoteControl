@@ -56,7 +56,7 @@ class AirplaneCore(object):
 
     def __post_init__(self):
         # 在这里实例化，此时可以安全地将 self 传给 ImageReceiver
-        self.receiver = ImageReceiver(self)
+        self.image_receiver = ImageReceiver(self)
         pass
 
     def cap_image(
@@ -68,15 +68,15 @@ class AirplaneCore(object):
         pass
 
     def get_image_transfer_progress(self):
-        self.image_receiver.get_transfer_progress()
+        return self.image_receiver.get_transfer_progress()
         pass
 
     def is_image_transfer_in_progress(self):
-        self.image_receiver.is_transfer_in_progress()
+        return self.image_receiver.is_transfer_in_progress()
         pass
 
     def get_latest_image(self):
-        self.image_receiver.get_latest_image()
+        return self.image_receiver.get_latest_image()
         pass
 
     def get_camera_front_img(self):

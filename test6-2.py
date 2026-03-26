@@ -1,4 +1,6 @@
 import asyncio
+
+from src.PhantasyIslandPythonRemoteControl import AirplaneController
 from src.PhantasyIslandPythonRemoteControl.airplane_manager import get_airplane_manager
 
 
@@ -9,7 +11,7 @@ def handle_image(airplane_id, img):
 
 # 异步飞行任务
 async def async_flight_mission(manager, airplane_id):
-    a = manager.get_airplane(airplane_id)
+    a: AirplaneController = manager.get_airplane(airplane_id)
 
     a.use_fast_mode(
         fast_mode=False,
@@ -22,8 +24,8 @@ async def async_flight_mission(manager, airplane_id):
     a.takeoff(100)
     await asyncio.sleep(5)  # 让出 CPU 控制权给其他飞机
 
-    a.left(100)
-    await asyncio.sleep(2)
+    # a.left(100)
+    # await asyncio.sleep(2)
 
     # 触发抓图（底层必须是非阻塞的）
     a.cap_image(
@@ -34,6 +36,13 @@ async def async_flight_mission(manager, airplane_id):
     # 继续飞行，互不干扰
     a.up(100)
     await asyncio.sleep(2)
+
+    manager.flush()
+    print(a.status)
+    print(a.status.x, a.status.y, a.status.h)
+
+    a.goto(a.status.x, 300, 300)
+    await asyncio.sleep(3)
 
     a.land()
     await asyncio.sleep(5)
@@ -47,10 +56,12 @@ async def main_async():
     m.flush()
 
     airplane_ids = [
-        # 'COM3',
-        'FH0C:COM3',
-        'FH0C:COM4',
-        'FH0C:COM5',
+        'COM3',
+        'COM4',
+        'COM5',
+        # 'FH0C:COM3',
+        # 'FH0C:COM4',
+        # 'FH0C:COM5',
     ]
 
     # 并发执行所有飞机的任务

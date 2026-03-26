@@ -1,3 +1,4 @@
+import concurrent.futures
 from .airplane_core import AirplaneCore
 from .http_layer import send_cmd, send_cmd_volatile
 
@@ -11,18 +12,25 @@ class AirplaneController(AirplaneCore):
 
     _send_cmd_fn = staticmethod(send_cmd)
 
-    def use_fast_mode(self, enable=True):
+    _executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
+
+    def use_fast_mode(self, fast_mode=True, future_mode=True):
         """
         是否使用非阻塞模式
-        :param enable:
         :return:
         """
-        if enable:
-            # https://stackoverflow.com/questions/55527175/how-do-i-remove-implicit-passing-of-self-in-python-class
-            _send_cmd_fn = staticmethod(send_cmd_volatile)
+        if not future_mode:
+            if fast_mode:
+                # https://stackoverflow.com/questions/55527175/how-do-i-remove-implicit-passing-of-self-in-python-class
+                self._send_cmd_fn = staticmethod(send_cmd_volatile)
+            else:
+                self._send_cmd_fn = staticmethod(send_cmd)
+            pass
         else:
-            _send_cmd_fn = staticmethod(send_cmd)
-        pass
+            if fast_mode:
+                self._send_cmd_fn = lambda s: self._executor.submit(send_cmd_volatile, s)
+            else:
+                self._send_cmd_fn = lambda s: self._executor.submit(send_cmd, s)
 
     def _next_count(self):
         self.count = self.count + 2

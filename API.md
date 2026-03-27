@@ -23,6 +23,11 @@ a.use_fast_mode(
 a.takeoff(100)
 time.sleep(3)
 
+a.cap_image(
+    user_receive_callback=lambda img: print(img),
+    user_progress_callback=lambda p, t: None
+)
+
 a.land()
 time.sleep(3)
 

@@ -1,10 +1,12 @@
 
 
+模板：
 
 ```python
 
 from PhantasyIslandPythonRemoteControl import AirplaneController
 from PhantasyIslandPythonRemoteControl.airplane_manager import get_airplane_manager
+import time
 
 m = get_airplane_manager()
 m.flush()
@@ -18,6 +20,14 @@ a.use_fast_mode(
     future_mode=True,
 )
 
+a.takeoff(100)
+time.sleep(3)
 
+a.land()
+time.sleep(3)
 
 ```
+
+
+
+

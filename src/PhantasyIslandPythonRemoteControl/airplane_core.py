@@ -64,6 +64,12 @@ class AirplaneCore(object):
             user_receive_callback: typing.Optional[typing.Callable[[bytes], None]] = None,
             user_progress_callback: typing.Optional[typing.Callable[[int, int], None]] = None,
     ):
+        """
+        拍照
+        :param user_receive_callback:       照片获取到时的回调函数  user_receive_callback(cv::Mat image)
+        :param user_progress_callback:      照片传输时的传输进度回报  user_progress_callback(int progress, int total)
+        :return:
+        """
         self.image_receiver.send_cap_image(user_receive_callback, user_progress_callback)
         pass
 

@@ -16,7 +16,14 @@ class AirplaneController(AirplaneCore):
 
     def use_fast_mode(self, fast_mode=True, future_mode=True):
         """
-        是否使用非阻塞模式
+        设置命令是否使用非阻塞模式
+
+        同步阻塞模式（默认）：use_fast_mode(fast_mode=False, future_mode=False)
+        同步非阻塞模式：use_fast_mode(fast_mode=True, future_mode=False)
+        异步模式（用于asyncio）：use_fast_mode(fast_mode=False, future_mode=True)
+
+        :param fast_mode: 是否使用快速模式（不等待命令完成立即返回）
+        :param future_mode: 是否使用 Future 模式（返回 Future 对象以便在asyncio环境下异步等待返回）
         :return:
         """
         if not future_mode:
@@ -46,6 +53,7 @@ class AirplaneController(AirplaneCore):
     def mode(self, mode: int):
         """
         控制无人机飞行模式
+        在 goto 命令之前传 mode 4
         :param mode: 1,2,3,4
         :return:
         """

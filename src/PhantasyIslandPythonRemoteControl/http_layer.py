@@ -29,10 +29,10 @@ def start_volatile():
 def send_cmd(s: str):
     try:
         r = requests.get('http://' + remote_location + '/ECU_HTTP/sendStringCmd?c=' + s, timeout=10)
-        print(r.status_code)
-        print(r.text)
+        # print(r.status_code)
+        # print(r.text)
         j = json.loads(r.text)
-        print(j)
+        # print(j)
         return j
     except requests.exceptions.ReadTimeout as e:
         print('send_cmd ', s, ' ', 'Error Command Timeout')
@@ -51,8 +51,8 @@ def send_cmd(s: str):
 def send_cmd_volatile(s: str):
     try:
         r = requests.get('http://' + remote_location + '/ECU_HTTP/sendStringCmd?cc=' + s, timeout=10)
-        print(r.status_code)
-        print(r.text)
+        # print(r.status_code)
+        # print(r.text)
         j = json.loads(r.text)
         return j
     except requests.exceptions.ReadTimeout as e:

@@ -100,8 +100,5 @@ if __name__ == '__main__':
     rm = RadioManager()
     rm.connect()
 
-    # # 手动测试 msg_dispatch
-    # rm.msg_dispatch({'test_key': 'test_value', 'code': 200})
-
     # 保持连接，持续接收服务端消息（Ctrl+C 退出）
     rm.socketio.wait()

@@ -1,7 +1,7 @@
 import asyncio
 import threading
 import weakref
-from typing import Optional
+import typing
 
 import socketio
 
@@ -14,7 +14,8 @@ class RadioManager:
 
     scene_is_init: bool
 
-    _pending_waiters: dict  # wait_cmd -> list[weakref.ref[WaitToken]]
+    # wait_cmd -> list[weakref.ref[WaitToken]]
+    _pending_waiters: typing.Dict[str, typing.List[weakref.ReferenceType[WaitToken]]]
     _waiters_lock: threading.Lock
 
     def __init__(self):
@@ -113,7 +114,7 @@ class RadioManager:
 
     def _send_and_wait_sync(self, cmd: str, data: tuple = None,
                             wait_cmd: str = None,
-                            timeout: float = 3.0) -> Optional[dict]:
+                            timeout: float = 3.0) -> typing.Optional[dict]:
         """
         发送命令并同步阻塞等待响应。
 
@@ -123,7 +124,7 @@ class RadioManager:
         return token.wait(timeout=timeout)
 
     def _send_and_wait_token(self, cmd: str, data: tuple = None,
-                            wait_cmd: str = None) -> Optional[dict]:
+                             wait_cmd: str = None) -> typing.Optional[dict]:
         """
         发送命令并同步阻塞等待响应。
 
@@ -135,7 +136,7 @@ class RadioManager:
 
     async def _send_and_wait_async(self, cmd: str, data: tuple = None,
                                    wait_cmd: str = None,
-                                   timeout: float = 3.0) -> Optional[dict]:
+                                   timeout: float = 3.0) -> typing.Optional[dict]:
         """
         发送命令并异步等待响应。
 
@@ -166,10 +167,10 @@ class RadioManager:
             for ref in refs:
                 token = ref()
                 if token is None:
-                    continue          # 已被 GC，跳过
+                    continue  # 已被 GC，跳过
                 if not matched:
                     token._complete(data)
-                    matched = True     # 只唤醒第一个，不保留到 surviving
+                    matched = True  # 只唤醒第一个，不保留到 surviving
                 else:
                     surviving.append(ref)
 

@@ -27,7 +27,7 @@ class WaitToken:
         resp = await asyncio.wait_for(token, timeout=5.0)
     """
 
-    __slots__ = ('wait_cmd', 'response', '_event', '_future', '_loop')
+    __slots__ = ('wait_cmd', 'response', '_event', '_future', '_loop', '__weakref__')
 
     def __init__(self, wait_cmd: str):
         self.wait_cmd: str = wait_cmd

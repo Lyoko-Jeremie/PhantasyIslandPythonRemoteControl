@@ -66,12 +66,14 @@ class RadioManager:
     def _check_scene_status(self):
         # 等价于 JS 的 socket.emit('check_scene_status', data)
         # self.socketio.emit('check_scene_status', {}, namespace=self.namespace)
-        self.ping()
+        # self.ping()
+        self._send('ping')
         self._send('scene.getInitState')
         pass
 
     def ping(self):
-        self._send('ping')
+        # self._send('ping')
+        return self._send_and_wait_sync('ping', wait_cmd='pong')
         pass
 
     def _send(self, cmd: str, data: tuple = None):
@@ -212,10 +214,3 @@ class RadioManager:
         print(f'[RadioManager] handle sceneInit: {data}')
         self.scene_is_init = True
 
-
-if __name__ == '__main__':
-    rm = RadioManager()
-    rm.connect()
-
-    # 保持连接，持续接收服务端消息（Ctrl+C 退出）
-    rm.socketio.wait()

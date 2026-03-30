@@ -83,7 +83,7 @@ class RadioManager:
         return self._send_and_wait_sync('ping', wait_cmd='pong')
         pass
 
-    def _send(self, cmd: str, data: tuple = None):
+    def _send(self, cmd: str, data: dict = None):
         # 等价于 JS 的 socket.emit('message', data)
         msg = {'cmd': cmd}
         if data:
@@ -108,15 +108,23 @@ class RadioManager:
         """
         if wait_cmd is None:
             wait_cmd = cmd
+            pass
 
-        token = WaitToken(wait_cmd)
+        time_base_id = self.create_msg_timestamp_id()
+
+        token = WaitToken(wait_cmd, time_base_id)
 
         # 注册弱引用（先注册再发送，避免响应在注册前到达）
         ref = weakref.ref(token)
         with self._waiters_lock:
             self._pending_waiters.setdefault(wait_cmd, []).append(ref)
 
-        self._send(cmd, data)
+        msg = {
+            'timestampId': time_base_id,
+        }
+        if data:
+            msg.update(data)
+        self._send(cmd, msg)
         return token
 
     # ---- 请求-响应: 便捷方法 ----
@@ -178,7 +186,7 @@ class RadioManager:
                 if token is None:
                     continue  # 已被 GC，跳过
                 if not matched:
-                    token._complete(data)
+                    token.complete(data)
                     matched = True  # 只唤醒第一个，不保留到 surviving
                 else:
                     surviving.append(ref)

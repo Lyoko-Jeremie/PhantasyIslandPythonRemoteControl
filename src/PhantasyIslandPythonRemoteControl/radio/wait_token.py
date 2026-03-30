@@ -29,8 +29,9 @@ class WaitToken:
 
     __slots__ = ('wait_cmd', 'response', '_event', '_future', '_loop', '__weakref__')
 
-    def __init__(self, wait_cmd: str):
+    def __init__(self, wait_cmd: str, time_base_id: int):
         self.wait_cmd: str = wait_cmd
+        self.time_base_id: int = time_base_id
         self.response: Optional[dict] = None
         self._event = threading.Event()
         self._future: Optional[asyncio.Future] = None
@@ -45,7 +46,7 @@ class WaitToken:
 
     # ---------- 由 RadioManager 在 socket.io 线程调用 ----------
 
-    def _complete(self, data: dict) -> None:
+    def complete(self, data: dict) -> None:
         """
         填充响应并唤醒所有等待者（sync Event + async Future）。
         此方法由 socket.io 监听线程调用，必须线程安全。
@@ -98,4 +99,3 @@ class WaitToken:
     def __repr__(self):
         status = 'done' if self.done else 'pending'
         return f'<WaitToken cmd={self.wait_cmd!r} {status}>'
-

@@ -169,11 +169,13 @@ class RadioManager:
 
     def _notify_waiters(self, cmd: str, data: dict) -> bool:
         """
-        尝试唤醒第一个仍存活且正在等待 cmd 的 WaitToken。
+        尝试唤醒与 cmd + timestampId 精确匹配的 WaitToken。
         顺便清理已被 GC 回收的死引用。
 
         :return: True 表示有 token 被唤醒，False 表示无人等待
         """
+        timestamp_id = data.get('timestampId')
+
         with self._waiters_lock:
             refs = self._pending_waiters.get(cmd)
             if not refs:
@@ -185,9 +187,9 @@ class RadioManager:
                 token = ref()
                 if token is None:
                     continue  # 已被 GC，跳过
-                if not matched:
+                if not matched and timestamp_id is not None and token.time_base_id == timestamp_id:
                     token.complete(data)
-                    matched = True  # 只唤醒第一个，不保留到 surviving
+                    matched = True  # 精确匹配，不保留到 surviving
                 else:
                     surviving.append(ref)
 

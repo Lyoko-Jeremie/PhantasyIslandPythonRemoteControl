@@ -120,7 +120,7 @@ class RadioManager:
             self._pending_waiters.setdefault(wait_cmd, []).append(ref)
 
         msg = {
-            'timestampId': time_base_id,
+            'timestampIdPython': time_base_id,
         }
         if data:
             msg.update(data)
@@ -169,12 +169,12 @@ class RadioManager:
 
     def _notify_waiters(self, cmd: str, data: dict) -> bool:
         """
-        尝试唤醒与 cmd + timestampId 精确匹配的 WaitToken。
+        尝试唤醒与 cmd + timestampIdPython 精确匹配的 WaitToken。
         顺便清理已被 GC 回收的死引用。
 
         :return: True 表示有 token 被唤醒，False 表示无人等待
         """
-        timestamp_id = data.get('timestampId')
+        timestamp_id = data.get('timestampIdPython')
 
         with self._waiters_lock:
             refs = self._pending_waiters.get(cmd)

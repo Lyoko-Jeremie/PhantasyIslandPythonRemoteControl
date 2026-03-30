@@ -1,7 +1,9 @@
 import asyncio
 import threading
+import time
 import weakref
 import typing
+import math
 
 import socketio
 
@@ -17,6 +19,11 @@ class RadioManager:
     # wait_cmd -> list[weakref.ref[WaitToken]]
     _pending_waiters: typing.Dict[str, typing.List[weakref.ReferenceType[WaitToken]]]
     _waiters_lock: threading.Lock
+
+    def create_msg_timestamp_id(self):
+        # a time base random number smaller than 52bt (JavaScript Number.MAX_SAFE_INTEGER)
+        return math.floor(time.time() * 1000 * 100)
+        # return math.floor(time.time() * 1000 * 100) % 100000000000000
 
     def __init__(self):
         self.socketio = socketio.Client()
@@ -213,4 +220,3 @@ class RadioManager:
     def _on_scene_init(self, data):
         print(f'[RadioManager] handle sceneInit: {data}')
         self.scene_is_init = True
-

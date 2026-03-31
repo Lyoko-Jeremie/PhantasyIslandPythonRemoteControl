@@ -18,7 +18,7 @@ class DebugApi(ApiModule):
         rm.debug.ping()
     """
 
-    def ping(self) -> typing.Optional[dict]:
+    def ping(self):
         """Ping 远端，等待 pong 回复。"""
         return self.send('ping', wait_cmd='pong')
 

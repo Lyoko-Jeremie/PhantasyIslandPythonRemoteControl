@@ -13,10 +13,10 @@ from .type_def import XYZ, RadioCheckOptions, RadioMaterialProperties
 
 class RadioApi(ApiModule):
 
-    def isSceneInit(self) -> typing.Optional[dict]:
+    def isSceneInit(self):
         return self.send('radio.isSceneInit')
 
-    def isRadioReachabilityCheckerInit(self) -> typing.Optional[dict]:
+    def isRadioReachabilityCheckerInit(self):
         return self.send('radio.isRadioReachabilityCheckerInit')
 
     def checkReachability(self, aTx: XYZ, bRx: XYZ, options: typing.Optional[RadioCheckOptions]) -> typing.Optional[
@@ -27,31 +27,31 @@ class RadioApi(ApiModule):
             'options': options.to_dict() if options is not None else None,
         })
 
-    def updateObjectPos(self, objectId: str, position: XYZ) -> typing.Optional[dict]:
+    def updateObjectPos(self, objectId: str, position: XYZ):
         return self.send('radio.updateObjectPos', data={
             'objectId': objectId,
             'position': position,
         })
 
     def updateMeshRadioMaterial(self, meshId: str, materialId: typing.Optional[str],
-                                thickness_m: typing.Optional[float]) -> typing.Optional[dict]:
+                                thickness_m: typing.Optional[float]):
         return self.send('radio.updateMeshRadioMaterial', data={
             'meshId': meshId,
             'materialId': materialId,
             'thickness_m': thickness_m,
         })
 
-    def getAllRadioMaterial(self) -> typing.Optional[dict]:
+    def getAllRadioMaterial(self):
         return self.send('radio.getAllRadioMaterial')
 
-    def localRadioMaterial(self) -> typing.Optional[dict]:
+    def localRadioMaterial(self):
         return self.send('radio.localRadioMaterial')
 
-    def getBuildingRadioMaterial(self) -> typing.Optional[dict]:
+    def getBuildingRadioMaterial(self):
         return self.send('radio.getBuildingRadioMaterial')
 
-    def addRadioMaterial(self, material: RadioMaterialProperties) -> typing.Optional[dict]:
+    def addRadioMaterial(self, material: RadioMaterialProperties):
         return self.send('radio.addRadioMaterial', data=material.to_dict())
 
-    def listRadioLocalObjects(self) -> typing.Optional[dict]:
+    def listRadioLocalObjects(self):
         return self.send('radio.listRadioLocalObjects')

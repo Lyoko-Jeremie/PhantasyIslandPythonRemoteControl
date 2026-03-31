@@ -11,14 +11,14 @@ from .api_module import ApiModule
 
 class FlyApi(ApiModule):
 
-    def listFlyObject(self) -> typing.Optional[dict]:
+    def listFlyObject(self):
         return self.send('fly.listFlyObject')
 
-    def getFlyObjectInfo(self, keyName: str) -> typing.Optional[dict]:
+    def getFlyObjectInfo(self, keyName: str):
         return self.send('fly.getFlyObjectInfo', data={'keyName': keyName})
 
-    def getFlyObjectCameraImageDown(self, keyName: str) -> typing.Optional[dict]:
+    def getFlyObjectCameraImageDown(self, keyName: str):
         return self.send('fly.getFlyObjectCameraImageDown', data={'keyName': keyName})
 
-    def getFlyObjectCameraImageFront(self, keyName: str) -> typing.Optional[dict]:
+    def getFlyObjectCameraImageFront(self, keyName: str):
         return self.send('fly.getFlyObjectCameraImageFront', data={'keyName': keyName})

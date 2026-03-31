@@ -9,12 +9,23 @@ import socketio
 
 from .wait_token import WaitToken
 
+from .api_debug import DebugApi
+from .api_scene import SceneApi
+from .api_fly import FlyApi
+from .api_radio import RadioApi
+
 
 class RadioManager:
     socketio: socketio.Client
     namespace: str
 
     scene_is_init: bool
+
+    # ---- Sub-API 模块（按领域拆分的指令集） ----
+    debugApi: DebugApi
+    sceneApi: SceneApi
+    flyApi: FlyApi
+    radioApi: RadioApi
 
     # wait_cmd -> list[weakref.ref[WaitToken]]
     _pending_waiters: typing.Dict[str, typing.List[weakref.ReferenceType[WaitToken]]]
@@ -31,6 +42,12 @@ class RadioManager:
         self.scene_is_init = False
         self._pending_waiters = {}
         self._waiters_lock = threading.Lock()
+
+        # 初始化 Sub-API 模块
+        self.debugApi = DebugApi(self)
+        self.sceneApi = SceneApi(self)
+        self.flyApi = FlyApi(self)
+        self.radioApi = RadioApi(self)
         pass
 
     def connect(self, url='http://127.0.0.1:60002', namespace='/UserSide'):
@@ -71,17 +88,12 @@ class RadioManager:
         pass
 
     def _check_scene_status(self):
-        # 等价于 JS 的 socket.emit('check_scene_status', data)
-        # self.socketio.emit('check_scene_status', {}, namespace=self.namespace)
-        # self.ping()
         self._send('ping')
         self._send('scene.getInitState')
         pass
 
     def ping(self):
-        # self._send('ping')
         return self._send_and_wait_sync('ping', wait_cmd='pong')
-        pass
 
     def _send(self, cmd: str, data: dict = None):
         # 等价于 JS 的 socket.emit('message', data)

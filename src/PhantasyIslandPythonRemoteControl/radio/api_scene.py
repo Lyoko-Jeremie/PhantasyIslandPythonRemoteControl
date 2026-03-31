@@ -7,6 +7,7 @@ from __future__ import annotations
 import typing
 
 from .api_module import ApiModule
+from .type_def_view import ViewMaterialChangeCommand, ViewMaterialChangeCommandSimple
 
 
 class SceneApi(ApiModule):
@@ -25,14 +26,21 @@ class SceneApi(ApiModule):
 
     def moveObjectById(self, objectId: str, position: typing.Tuple[float, float, float]):
         return self.send('scene.moveObjectById',
-                                        data={'objectId': objectId,
-                                              'position': [position[0], position[1], position[2]]})
+                         data={'objectId': objectId,
+                               'position': [position[0], position[1], position[2]]})
 
     def setObjectRadioMaterial(self, objectId: str, materialId: typing.Optional[str],
                                thickness_m: typing.Optional[float]):
         return self.send('scene.setObjectRadioMaterial',
-                                        data={'objectId': objectId,
-                                              'materialId': materialId,
-                                              'thickness_m': thickness_m})
+                         data={'objectId': objectId,
+                               'materialId': materialId,
+                               'thickness_m': thickness_m})
 
+    def updateMeshViewMaterial(self, meshId: str, viewMaterialChangeCommand: ViewMaterialChangeCommand):
+        return self.send('scene.updateMeshViewMaterial',
+                         data={'meshId': meshId, 'viewMaterialChangeCommand': viewMaterialChangeCommand})
 
+    def updateMeshViewMaterialSimple(self, meshId: str,
+                                     viewMaterialChangeCommandSimple: ViewMaterialChangeCommandSimple):
+        return self.send('scene.updateMeshViewMaterialSimple',
+                         data={'meshId': meshId, 'viewMaterialChangeCommandSimple': viewMaterialChangeCommandSimple})

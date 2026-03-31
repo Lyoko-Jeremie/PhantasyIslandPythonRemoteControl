@@ -57,14 +57,20 @@ class ApiModule:
 
     def _send_and_wait_sync(self, cmd: str, data: dict = None,
                             wait_cmd: str = None,
-                            timeout: float = 3.0) -> typing.Optional[dict]:
-        return self._rm._send_and_wait_sync(cmd, data, wait_cmd, timeout)
+                            timeout: float = 3.0,
+                            post_processor: typing.Callable[[dict], typing.Any] = None,
+                            ) -> typing.Optional[dict]:
+        return self._rm._send_and_wait_sync(cmd, data, wait_cmd, timeout, post_processor=post_processor)
 
     def _send_and_wait_token(self, cmd: str, data: dict = None,
-                             wait_cmd: str = None):
-        return self._rm._send_and_wait_token(cmd, data, wait_cmd)
+                             wait_cmd: str = None,
+                             post_processor: typing.Callable[[dict], typing.Any] = None,
+                             ):
+        return self._rm._send_and_wait_token(cmd, data, wait_cmd, post_processor=post_processor)
 
     async def _send_and_wait_async(self, cmd: str, data: dict = None,
                                    wait_cmd: str = None,
-                                   timeout: float = 3.0) -> typing.Optional[dict]:
-        return await self._rm._send_and_wait_async(cmd, data, wait_cmd, timeout)
+                                   timeout: float = 3.0,
+                                   post_processor: typing.Callable[[dict], typing.Any] = None,
+                                   ) -> typing.Optional[dict]:
+        return await self._rm._send_and_wait_async(cmd, data, wait_cmd, timeout, post_processor=post_processor)

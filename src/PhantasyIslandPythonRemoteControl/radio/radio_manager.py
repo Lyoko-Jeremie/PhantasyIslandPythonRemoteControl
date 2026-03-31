@@ -106,7 +106,8 @@ class RadioManager:
     # ---- 请求-响应: 核心 ----
 
     def _send_with_token(self, cmd: str, data: tuple = None,
-                         wait_cmd: str = None) -> WaitToken:
+                         wait_cmd: str = None,
+                         post_processor: typing.Callable[[dict], typing.Any] = None, ) -> WaitToken:
         """
         发送命令并返回一个 WaitToken，调用方自行决定如何等待。
 
@@ -125,6 +126,9 @@ class RadioManager:
         time_base_id = self.create_msg_timestamp_id()
 
         token = WaitToken(wait_cmd, time_base_id)
+
+        if post_processor is not None:
+            token.set_post_processor(post_processor)
 
         # 注册弱引用（先注册再发送，避免响应在注册前到达）
         ref = weakref.ref(token)
@@ -148,35 +152,40 @@ class RadioManager:
 
     def _send_and_wait_sync(self, cmd: str, data: tuple = None,
                             wait_cmd: str = None,
-                            timeout: float = 3.0) -> typing.Optional[dict]:
+                            timeout: float = 3.0,
+                            post_processor: typing.Callable[[dict], typing.Any] = None,
+                            ) -> typing.Optional[dict]:
         """
         发送命令并同步阻塞等待响应。
 
         :return: 响应 dict，超时返回 None
         """
-        token = self._send_with_token(cmd, data, wait_cmd)
+        token = self._send_with_token(cmd, data, wait_cmd, post_processor=post_processor)
         return token.wait(timeout=timeout)
 
     def _send_and_wait_token(self, cmd: str, data: tuple = None,
-                             wait_cmd: str = None) -> typing.Optional[dict]:
+                             wait_cmd: str = None,
+                             post_processor: typing.Callable[[dict], typing.Any] = None,
+                             ) -> typing.Optional[dict]:
         """
         发送命令并同步阻塞等待响应。
 
         :return: WaitToken 实例，调用方可自行决定如何等待
         """
-        token = self._send_with_token(cmd, data, wait_cmd)
+        token = self._send_with_token(cmd, data, wait_cmd, post_processor=post_processor)
         return token
-        # return token.wait(timeout=timeout)
 
     async def _send_and_wait_async(self, cmd: str, data: tuple = None,
                                    wait_cmd: str = None,
-                                   timeout: float = 3.0) -> typing.Optional[dict]:
+                                   timeout: float = 3.0,
+                                   post_processor: typing.Callable[[dict], typing.Any] = None,
+                                   ) -> typing.Optional[dict]:
         """
         发送命令并异步等待响应。
 
         :return: 响应 dict，超时返回 None
         """
-        token = self._send_with_token(cmd, data, wait_cmd)
+        token = self._send_with_token(cmd, data, wait_cmd, post_processor=post_processor)
         try:
             return await asyncio.wait_for(token, timeout=timeout)
         except asyncio.TimeoutError:

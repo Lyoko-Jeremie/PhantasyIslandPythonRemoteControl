@@ -11,6 +11,7 @@ print(rm.radioApi.listRadioLocalObjects())
 print(rm.radioApi.mode('token'))
 t = rm.radioApi.listRadioLocalObjects()
 print(t)
-print(t)
+print(t.wait(10))
+print(rm.radioApi.get_now_mode())
 
 rm.socketio.wait()

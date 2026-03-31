@@ -26,10 +26,11 @@ class ApiModule:
                 return self._send_and_wait_sync('scene.getInitState')
     """
 
-    __slots__ = ('_rm', 'send')
+    __slots__ = ('_rm', 'send', '_now_mode')
 
     def __init__(self, rm: 'RadioManager') -> None:
         self._rm = rm
+        self._now_mode = 'sync'
         self.send = self._send_and_wait_sync
         self.mode('sync')
         pass
@@ -43,12 +44,18 @@ class ApiModule:
         """
         if mode == 'sync':
             self.send = self._send_and_wait_sync
+            self._now_mode = 'sync'
         elif mode == 'async':
             self.send = self._send_and_wait_async
+            self._now_mode = 'async'
         elif mode == 'token':
             self.send = self._send_and_wait_token
+            self._now_mode = 'token'
         else:
             raise ValueError(f"Invalid mode: {mode}")
+
+    def get_now_mode(self):
+        return self._now_mode
 
     # ---- 便捷代理，子类直接调用即可 ----
 

@@ -20,5 +20,5 @@ class DebugApi(ApiModule):
 
     def ping(self) -> typing.Optional[dict]:
         """Ping 远端，等待 pong 回复。"""
-        return self._send_and_wait_sync('ping', wait_cmd='pong')
+        return self.send('ping', wait_cmd='pong')
 

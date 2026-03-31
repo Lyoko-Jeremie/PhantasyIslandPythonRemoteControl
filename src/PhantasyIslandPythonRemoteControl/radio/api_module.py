@@ -26,10 +26,29 @@ class ApiModule:
                 return self._send_and_wait_sync('scene.getInitState')
     """
 
-    __slots__ = ('_rm',)
+    __slots__ = ('_rm', 'send')
 
     def __init__(self, rm: 'RadioManager') -> None:
         self._rm = rm
+        self.send = self._send_and_wait_sync
+        self.mode('sync')
+        pass
+
+    def mode(self, mode: str):
+        """
+        切换发送模式，mode 可选值：
+            - 'sync': 同步模式，调用后会阻塞直到收到响应
+            - 'async': 异步模式，调用后立即返回一个 Future 对象
+            - 'token': 令牌模式，调用后立即返回一个令牌字符串，后续可通过 wait_token 等待响应
+        """
+        if mode == 'sync':
+            self.send = self._send_and_wait_sync
+        elif mode == 'async':
+            self.send = self._send_and_wait_async
+        elif mode == 'token':
+            self.send = self._send_and_wait_token
+        else:
+            raise ValueError(f"Invalid mode: {mode}")
 
     # ---- 便捷代理，子类直接调用即可 ----
 
@@ -49,4 +68,3 @@ class ApiModule:
                                    wait_cmd: str = None,
                                    timeout: float = 3.0) -> typing.Optional[dict]:
         return await self._rm._send_and_wait_async(cmd, data, wait_cmd, timeout)
-

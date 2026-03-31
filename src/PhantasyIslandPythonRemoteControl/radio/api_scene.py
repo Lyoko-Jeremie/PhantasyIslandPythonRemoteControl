@@ -12,25 +12,25 @@ from .api_module import ApiModule
 class SceneApi(ApiModule):
 
     # def get_init_state(self) -> typing.Optional[dict]:
-    #     return self._send_and_wait_sync('scene.getInitState')
+    #     return self.send('scene.getInitState')
 
     def listAllMeshObjectInScene(self) -> typing.Optional[dict]:
-        return self._send_and_wait_sync('scene.listAllMeshObjectInScene')
+        return self.send('scene.listAllMeshObjectInScene')
 
     def getObjectInfoById(self, objectId: str) -> typing.Optional[dict]:
-        return self._send_and_wait_sync('scene.getObjectInfoById', data={'objectId': objectId})
+        return self.send('scene.getObjectInfoById', data={'objectId': objectId})
 
     def removeObjectById(self, objectId: str) -> typing.Optional[dict]:
-        return self._send_and_wait_sync('scene.removeObjectById', data={'objectId': objectId})
+        return self.send('scene.removeObjectById', data={'objectId': objectId})
 
     def moveObjectById(self, objectId: str, position: typing.Tuple[float, float, float]) -> typing.Optional[dict]:
-        return self._send_and_wait_sync('scene.moveObjectById',
+        return self.send('scene.moveObjectById',
                                         data={'objectId': objectId,
                                               'position': [position[0], position[1], position[2]]})
 
     def setObjectRadioMaterial(self, objectId: str, materialId: typing.Optional[str],
                                thickness_m: typing.Optional[float]) -> typing.Optional[dict]:
-        return self._send_and_wait_sync('scene.setObjectRadioMaterial',
+        return self.send('scene.setObjectRadioMaterial',
                                         data={'objectId': objectId,
                                               'materialId': materialId,
                                               'thickness_m': thickness_m})

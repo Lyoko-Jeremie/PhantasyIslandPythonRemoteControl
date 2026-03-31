@@ -23,7 +23,7 @@ class ApiModule:
 
         class SceneApi(ApiModule):
             def get_init_state(self):
-                return self._send_and_wait_sync('scene.getInitState')
+                return self.send('scene.getInitState')
     """
 
     __slots__ = ('_rm', 'send', '_now_mode')

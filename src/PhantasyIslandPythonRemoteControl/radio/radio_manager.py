@@ -136,6 +136,11 @@ class RadioManager:
         }
         if data:
             msg.update(data)
+            pass
+
+        # remove None from data root level, to avoid sending unnecessary fields
+        msg = {k: v for k, v in msg.items() if v is not None}
+
         self._send(cmd, msg)
         return token
 
@@ -213,13 +218,17 @@ class RadioManager:
             return matched
 
     def msg_dispatch(self, data):
-        cmd = data.get('cmd', '')
+        cmd = data.get('cmd', None)
 
         # 优先唤醒正在同步/异步等待此 cmd 的调用者
         if self._notify_waiters(cmd, data):
             return
 
         match cmd:
+            case None:
+                # TODO maybe a error catch
+                print(f'[RadioManager] received message without cmd: {data}')
+                pass
             case 'pong':
                 pass
             case 'sceneReset':

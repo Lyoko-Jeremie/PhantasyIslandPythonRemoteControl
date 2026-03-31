@@ -7,7 +7,7 @@ Python 等价类型定义，对应 TypeScript TypeBox 定义的类型。
 from __future__ import annotations
 
 import dataclasses
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple
 
 
 # ---------------------------------------------------------------------------
@@ -146,6 +146,168 @@ def check_reachability_request_from_dict(data: dict) -> CheckReachabilityRequest
     )
 
 
+# ---------------------------------------------------------------------------
+# UpdateObjectPosRequest — 更新对象位置的消息
+# ---------------------------------------------------------------------------
+@dataclasses.dataclass
+class UpdateObjectPosRequest:
+    """
+    更新对象位置的消息。
+
+    :param objectId: 对象的唯一标识
+    :param position: 新的三维坐标 ``(x, y, z)``
+    """
+
+    objectId: str
+    """对象的唯一标识"""
+
+    position: XYZ
+    """新的坐标"""
+
+    def to_dict(self) -> dict:
+        """转换为可直接通过 socketio 发送的 dict。"""
+        return {
+            'objectId': self.objectId,
+            'position': list(self.position),
+        }
+
+
+def update_object_pos_request_from_dict(data: dict) -> UpdateObjectPosRequest:
+    """从 dict 构造 UpdateObjectPosRequest。"""
+    return UpdateObjectPosRequest(
+        objectId=str(data['objectId']),
+        position=xyz_from_list(data['position']),
+    )
+
+
+# ---------------------------------------------------------------------------
+# UpdateMeshRadioMaterialRequest — 更新对象的电磁属性
+# ---------------------------------------------------------------------------
+@dataclasses.dataclass
+class UpdateMeshRadioMaterialRequest:
+    """
+    更新对象的电磁属性。
+
+    :param meshId: 网格的唯一标识
+    :param materialId: 材料类型 Id，如 ``"concrete"``, ``"wood"``, ``"metal"`` 等。见 ``getAllRadioMaterial`` 接口返回值
+    :param thickness_m: 单面物体情况下的物体默认厚度，单位米
+    """
+
+    meshId: str
+    """网格的唯一标识"""
+
+    materialId: Optional[str] = None
+    """材料类型 Id，如 ``"concrete"``, ``"wood"``, ``"metal"`` 等。见 ``getAllRadioMaterial`` 接口返回值"""
+
+    thickness_m: Optional[float] = None
+    """单面物体情况下的物体默认厚度，单位米"""
+
+    def to_dict(self) -> dict:
+        """转换为 dict，自动过滤值为 ``None`` 的可选字段。"""
+        d: dict = {'meshId': self.meshId}
+        if self.materialId is not None:
+            d['materialId'] = self.materialId
+        if self.thickness_m is not None:
+            d['thickness_m'] = self.thickness_m
+        return d
+
+
+def update_mesh_radio_material_request_from_dict(data: dict) -> UpdateMeshRadioMaterialRequest:
+    """从 dict 构造 UpdateMeshRadioMaterialRequest。"""
+    return UpdateMeshRadioMaterialRequest(
+        meshId=str(data['meshId']),
+        materialId=data.get('materialId'),
+        thickness_m=float(data['thickness_m']) if 'thickness_m' in data and data['thickness_m'] is not None else None,
+    )
+
+
+# ---------------------------------------------------------------------------
+# RadioMaterialProperties — 电磁材料属性定义
+# ---------------------------------------------------------------------------
+@dataclasses.dataclass
+class RadioMaterialProperties:
+    """
+    电磁材料属性定义。
+
+    :param id: 材料的唯一标识，如 ``"concrete"``, ``"wood"``, ``"metal"`` 等
+    :param displayName: 材料的显示名称
+    :param penetrationLoss_dBPerMeter: 每米的穿透损耗，单位 dB/m
+    :param reflectionCoefficient: 反射系数，范围 0~1，表示入射信号被反射回去的比例
+    :param defaultThickness_m: 默认厚度，单位米
+    """
+
+    id: str
+    """材料的唯一标识，如 ``"concrete"``, ``"wood"``, ``"metal"`` 等"""
+
+    displayName: str
+    """材料的显示名称"""
+
+    penetrationLoss_dBPerMeter: float
+    """每米的穿透损耗，单位 dB/m"""
+
+    reflectionCoefficient: float
+    """反射系数，范围 0~1，表示入射信号被反射回去的比例"""
+
+    defaultThickness_m: float
+    """默认厚度，单位米。对于单面物体（如墙壁）来说，这个值用于估算穿透损耗；对于双面物体（如地面）来说，这个值可以忽略"""
+
+    def to_dict(self) -> dict:
+        """转换为 dict。"""
+        return dataclasses.asdict(self)
+
+
+def radio_material_properties_from_dict(data: dict) -> RadioMaterialProperties:
+    """从 dict 构造 RadioMaterialProperties。"""
+    return RadioMaterialProperties(
+        id=str(data['id']),
+        displayName=str(data['displayName']),
+        penetrationLoss_dBPerMeter=float(data['penetrationLoss_dBPerMeter']),
+        reflectionCoefficient=float(data['reflectionCoefficient']),
+        defaultThickness_m=float(data['defaultThickness_m']),
+    )
+
+
+# ---------------------------------------------------------------------------
+# JoyStickInput — 摇杆输入消息
+# ---------------------------------------------------------------------------
+@dataclasses.dataclass
+class JoyStickInput:
+    """
+    摇杆输入消息。
+
+    :param vx: 前后速度输入，范围 -1~1，正值表示向前
+    :param vy: 左右速度输入，范围 -1~1，正值表示向右
+    :param vz: 上下速度输入，范围 -1~1，正值表示向上
+    :param yawRate: 偏航角速度输入，范围 -1~1，正值表示顺时针旋转
+    """
+
+    vx: float = 0.0
+    """前后速度输入，范围 -1~1，正值表示向前"""
+
+    vy: float = 0.0
+    """左右速度输入，范围 -1~1，正值表示向右"""
+
+    vz: float = 0.0
+    """上下速度输入，范围 -1~1，正值表示向上"""
+
+    yawRate: float = 0.0
+    """偏航角速度输入，范围 -1~1，正值表示顺时针旋转"""
+
+    def to_dict(self) -> dict:
+        """转换为 dict。"""
+        return dataclasses.asdict(self)
+
+
+def joystick_input_from_dict(data: dict) -> JoyStickInput:
+    """从 dict 构造 JoyStickInput。"""
+    return JoyStickInput(
+        vx=float(data.get('vx', 0)),
+        vy=float(data.get('vy', 0)),
+        vz=float(data.get('vz', 0)),
+        yawRate=float(data.get('yawRate', 0)),
+    )
+
+
 # ========================= 原始 TypeScript TypeBox 定义 =========================
 #
 # export const XYZ = Type.Tuple([
@@ -166,4 +328,38 @@ def check_reachability_request_from_dict(data: dict) -> CheckReachabilityRequest
 #     options: Type.Optional(Type_RadioCheckOptions),
 # }, {
 #     description: '链路可达性检查请求消息',
+# });
+#
+# export const Type_updateObjectPos = Type.Object({
+#     objectId: Type.String({description: '对象的唯一标识', default: 'object_001'}),
+#     position: XYZ,
+# }, {
+#     description: '更新对象位置的消息',
+# });
+#
+# export const Type_updateMeshRadioMaterial = Type.Object({
+#     meshId: Type.String({description: '网格的唯一标识', default: 'mesh_001'}),
+#     materialId: Type.Optional(Type.String({description: '材料类型Id'})),
+#     thickness_m: Type.Optional(Type.Number({description: '单面物体情况下的物体默认厚度，单位米'})),
+# }, {
+#     description: '更新对象的电磁属性',
+# });
+#
+# export const Type_RadioMaterialProperties = Type.Object({
+#     id: Type.String({description: '材料的唯一标识', default: 'concrete'}),
+#     displayName: Type.String({description: '材料的显示名称', default: '混凝土'}),
+#     penetrationLoss_dBPerMeter: Type.Number({description: '每米的穿透损耗，单位 dB/m', default: 40}),
+#     reflectionCoefficient: Type.Number({description: '反射系数，范围 0~1', default: 0.5}),
+#     defaultThickness_m: Type.Number({description: '默认厚度，单位米', default: 0.3}),
+# }, {
+#     description: '电磁材料属性定义',
+# });
+#
+# export const Type_JoyStickInput = Type.Object({
+#     vx: Type.Number({description: '前后速度输入，范围 -1~1，正值表示向前', default: 0}),
+#     vy: Type.Number({description: '左右速度输入，范围 -1~1，正值表示向右', default: 0}),
+#     vz: Type.Number({description: '上下速度输入，范围 -1~1，正值表示向上', default: 0}),
+#     yawRate: Type.Number({description: '偏航角速度输入，范围 -1~1，正值表示顺时针旋转', default: 0}),
+# }, {
+#     description: '摇杆输入消息',
 # });

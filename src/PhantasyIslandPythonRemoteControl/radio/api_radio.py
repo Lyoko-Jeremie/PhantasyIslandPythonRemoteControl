@@ -8,16 +8,16 @@ import typing
 
 from .api_module import ApiModule, SendResult
 
-from .type_def import XYZ, RadioCheckOptions, RadioMaterialProperties
+from .type_def import XYZ, RadioCheckOptions, RadioMaterialProperties, radio_material_properties_from_dict
 
 
 class RadioApi(ApiModule):
 
-    def isSceneInit(self) -> SendResult[dict]:
-        return self.send('radio.isSceneInit')
+    def isSceneInit(self) -> SendResult[bool]:
+        return self.send('radio.isSceneInit', post_processor=lambda d: d.get('init'))
 
-    def isRadioReachabilityCheckerInit(self) -> SendResult[dict]:
-        return self.send('radio.isRadioReachabilityCheckerInit')
+    def isRadioReachabilityCheckerInit(self) -> SendResult[bool]:
+        return self.send('radio.isRadioReachabilityCheckerInit', post_processor=lambda d: d.get('init'))
 
     def checkReachability(self, aTx: XYZ, bRx: XYZ,
                           options: typing.Optional[RadioCheckOptions]) -> SendResult[dict]:
@@ -41,11 +41,15 @@ class RadioApi(ApiModule):
             'thickness_m': thickness_m,
         })
 
-    def getAllRadioMaterial(self) -> SendResult[dict]:
-        return self.send('radio.getAllRadioMaterial')
+    def getAllRadioMaterial(self) -> SendResult[typing.List[RadioMaterialProperties]]:
+        return self.send('radio.getAllRadioMaterial',
+                         post_processor=lambda d: [radio_material_properties_from_dict(n) for n in d.get('meshIds')],
+                         )
 
-    def localRadioMaterial(self) -> SendResult[dict]:
-        return self.send('radio.localRadioMaterial')
+    def localRadioMaterial(self) -> SendResult[typing.List[RadioMaterialProperties]]:
+        return self.send('radio.localRadioMaterial',
+                         post_processor=lambda d: [radio_material_properties_from_dict(n) for n in d.get('meshIds')],
+                         )
 
     def getBuildingRadioMaterial(self) -> SendResult[dict]:
         return self.send('radio.getBuildingRadioMaterial')
@@ -53,5 +57,5 @@ class RadioApi(ApiModule):
     def addRadioMaterial(self, material: RadioMaterialProperties) -> SendResult[dict]:
         return self.send('radio.addRadioMaterial', data=material.to_dict())
 
-    def listRadioLocalObjects(self) -> SendResult[dict]:
-        return self.send('radio.listRadioLocalObjects')
+    def listRadioLocalObjectsIds(self) -> SendResult[typing.List[str]]:
+        return self.send('radio.listRadioLocalObjects', post_processor=lambda d: d.get('localObjectIds'))

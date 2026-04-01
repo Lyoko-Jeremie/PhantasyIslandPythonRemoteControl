@@ -4,9 +4,7 @@
 
 from __future__ import annotations
 
-import typing
-
-from .api_module import ApiModule
+from .api_module import ApiModule, SendResult
 
 
 class DebugApi(ApiModule):
@@ -18,7 +16,7 @@ class DebugApi(ApiModule):
         rm.debug.ping()
     """
 
-    def ping(self):
+    def ping(self) -> SendResult[dict]:
         """Ping 远端，等待 pong 回复。"""
         return self.send('ping', wait_cmd='pong')
 

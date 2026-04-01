@@ -12,7 +12,7 @@ import threading
 from typing import Any, Callable, Optional
 
 
-class WaitToken:
+class WaitToken[_Data_Type]:
     """
     一次请求对应的小状态机。
 
@@ -43,8 +43,8 @@ class WaitToken:
     def __init__(self, wait_cmd: str, time_base_id: int):
         self.wait_cmd: str = wait_cmd
         self.time_base_id: int = time_base_id
-        self.response: Optional[dict] = None
-        self.processed_response: Any = None
+        self.response: Optional[_Data_Type] = None
+        self.processed_response: _Data_Type = None
         self._event = threading.Event()
         self._future: Optional[asyncio.Future] = None
         self._loop: Optional[asyncio.AbstractEventLoop] = None
@@ -73,7 +73,7 @@ class WaitToken:
         self._post_processor = processor
         return self
 
-    def _apply_post_processor(self, data: dict) -> Any:
+    def _apply_post_processor(self, data: _Data_Type) -> _Data_Type:
         """对原始数据执行后处理，返回处理后的结果并存入 processed_response。"""
         if self._post_processor is not None:
             result = self._post_processor(data)
@@ -105,7 +105,7 @@ class WaitToken:
 
     # ---------- 同步等待 ----------
 
-    def wait(self, timeout: float = 3.0) -> Optional[Any]:
+    def wait(self, timeout: float = 3.0) -> Optional[_Data_Type]:
         """
         阻塞当前线程直到收到响应或超时。
 

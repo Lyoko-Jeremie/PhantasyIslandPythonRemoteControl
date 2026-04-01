@@ -166,7 +166,7 @@ class RadioManager:
     def _send_and_wait_token(self, cmd: str, data: tuple = None,
                              wait_cmd: str = None,
                              post_processor: typing.Callable[[dict], typing.Any] = None,
-                             ) -> typing.Optional[dict]:
+                             ) -> WaitToken:
         """
         发送命令并同步阻塞等待响应。
 

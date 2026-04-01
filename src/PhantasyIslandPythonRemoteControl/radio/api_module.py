@@ -11,6 +11,20 @@ import typing
 if typing.TYPE_CHECKING:
     from .radio_manager import RadioManager
 
+from .wait_token import WaitToken
+
+# ---------------------------------------------------------------------------
+# SendResult —— 三种发送模式的统一返回类型别名
+#
+#   sync  模式  →  T | None           （阻塞等待，超时返回 None）
+#   token 模式  →  WaitToken[T]       （立即返回令牌，调用方自行 .wait() 或 await）
+#   async 模式  →  Coroutine[…]       （需 await，超时返回 None）
+#
+# 子类的 API 方法使用 ``-> SendResult[具体类型]`` 标注返回值即可。
+# 库使用者根据当前 mode 对返回值做类型窄化（isinstance / match）。
+# ---------------------------------------------------------------------------
+type SendResult[T] = T | None | WaitToken[T] | typing.Coroutine[typing.Any, typing.Any, T | None]
+
 
 class ApiModule:
     """
@@ -22,7 +36,7 @@ class ApiModule:
     用法::
 
         class SceneApi(ApiModule):
-            def get_init_state(self):
+            def get_init_state(self) -> SendResult[dict]:
                 return self.send('scene.getInitState')
     """
 
@@ -39,8 +53,8 @@ class ApiModule:
         """
         切换发送模式，mode 可选值：
             - 'sync': 同步模式，调用后会阻塞直到收到响应
-            - 'async': 异步模式，调用后立即返回一个 Future 对象
-            - 'token': 令牌模式，调用后立即返回一个令牌字符串，后续可通过 wait_token 等待响应
+            - 'async': 异步模式，调用后立即返回一个 Coroutine，需 await
+            - 'token': 令牌模式，调用后立即返回一个 WaitToken，后续可 .wait() 或 await
         """
         if mode == 'sync':
             self.send = self._send_and_wait_sync
@@ -54,12 +68,12 @@ class ApiModule:
         else:
             raise ValueError(f"Invalid mode: {mode}")
 
-    def get_now_mode(self):
+    def get_now_mode(self) -> str:
         return self._now_mode
 
     # ---- 便捷代理，子类直接调用即可 ----
 
-    def _send(self, cmd: str, data: dict = None):
+    def _send(self, cmd: str, data: dict = None) -> None:
         return self._rm._send(cmd, data)
 
     def _send_and_wait_sync(self, cmd: str, data: dict = None,
@@ -72,7 +86,7 @@ class ApiModule:
     def _send_and_wait_token(self, cmd: str, data: dict = None,
                              wait_cmd: str = None,
                              post_processor: typing.Callable[[dict], typing.Any] = None,
-                             ):
+                             ) -> WaitToken[dict]:
         return self._rm._send_and_wait_token(cmd, data, wait_cmd, post_processor=post_processor)
 
     async def _send_and_wait_async(self, cmd: str, data: dict = None,

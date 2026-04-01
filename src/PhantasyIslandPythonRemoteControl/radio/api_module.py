@@ -6,10 +6,13 @@ API 模块基类。
 
 from __future__ import annotations
 
+import asyncio
 import typing
 
 if typing.TYPE_CHECKING:
     from .radio_manager import RadioManager
+
+from typing import Self
 
 from .wait_token import WaitToken
 
@@ -25,6 +28,84 @@ from .wait_token import WaitToken
 # ---------------------------------------------------------------------------
 type SendResult[T] = T | None | WaitToken[T] | typing.Coroutine[typing.Any, typing.Any, T | None]
 
+# ---------------------------------------------------------------------------
+# 各模式对应的具体返回类型别名（用于明确标注已知模式下的返回值）
+# ---------------------------------------------------------------------------
+type SyncResult[T] = T | None
+type TokenResult[T] = WaitToken[T]
+type AsyncResult[T] = typing.Coroutine[typing.Any, typing.Any, T | None]
+
+
+# ---------------------------------------------------------------------------
+# 类型窄化辅助函数 —— 从 SendResult 中安全提取对应模式的返回值
+#
+# 这些函数同时具备两个作用:
+#   1. **静态**: 让类型检查器将 SendResult[T] 窄化为对应模式的精确类型
+#   2. **运行时**: 若模式不匹配会立即 raise TypeError，帮助尽早发现 bug
+#
+# 典型用法::
+#
+#     api.mode('token')
+#     token = as_token(api.listRadioLocalObjects())   # WaitToken[dict]
+#     resp  = token.wait(10)
+#
+#     api.mode('sync')
+#     data = as_sync(api.listRadioLocalObjects())      # dict | None
+# ---------------------------------------------------------------------------
+
+def as_sync[T](result: SendResult[T]) -> T | None:
+    """
+    将 ``SendResult[T]`` 窄化为同步模式的返回值 ``T | None``。
+
+    在 ``mode('sync')`` 下使用，提供运行时类型校验 + 静态类型窄化。
+
+    :raises TypeError: 当 result 不是同步结果时
+    """
+    if isinstance(result, WaitToken):
+        raise TypeError(
+            f"Expected sync result (T | None), got WaitToken. "
+            f"Did you forget to call mode('sync')?"
+        )
+    if asyncio.iscoroutine(result):
+        result.close()  # 避免 RuntimeWarning: coroutine was never awaited
+        raise TypeError(
+            f"Expected sync result (T | None), got coroutine. "
+            f"Did you forget to call mode('sync')?"
+        )
+    return result  # type: ignore[return-value]
+
+
+def as_token[T](result: SendResult[T]) -> WaitToken[T]:
+    """
+    将 ``SendResult[T]`` 窄化为令牌模式的返回值 ``WaitToken[T]``。
+
+    在 ``mode('token')`` 下使用，提供运行时类型校验 + 静态类型窄化。
+
+    :raises TypeError: 当 result 不是 WaitToken 时
+    """
+    if not isinstance(result, WaitToken):
+        raise TypeError(
+            f"Expected WaitToken, got {type(result).__name__}. "
+            f"Did you forget to call mode('token')?"
+        )
+    return result
+
+
+def as_awaitable[T](result: SendResult[T]) -> typing.Coroutine[typing.Any, typing.Any, T | None]:
+    """
+    将 ``SendResult[T]`` 窄化为异步模式的返回值 ``Coroutine[..., T | None]``。
+
+    在 ``mode('async')`` 下使用，提供运行时类型校验 + 静态类型窄化。
+
+    :raises TypeError: 当 result 不是协程时
+    """
+    if not asyncio.iscoroutine(result):
+        raise TypeError(
+            f"Expected coroutine, got {type(result).__name__}. "
+            f"Did you forget to call mode('async')?"
+        )
+    return result  # type: ignore[return-value]
+
 
 class ApiModule:
     """
@@ -38,6 +119,15 @@ class ApiModule:
         class SceneApi(ApiModule):
             def get_init_state(self) -> SendResult[dict]:
                 return self.send('scene.getInitState')
+
+    类型窄化用法::
+
+        api.mode('token')
+        token = as_token(api.some_method())   # WaitToken[dict]
+        token.wait(10)
+
+        api.mode('sync')
+        data = as_sync(api.some_method())     # dict | None
     """
 
     __slots__ = ('_rm', 'send', '_now_mode')
@@ -49,12 +139,20 @@ class ApiModule:
         self.mode('sync')
         pass
 
-    def mode(self, mode: str):
+    def mode(self, mode: str) -> Self:
         """
-        切换发送模式，mode 可选值：
-            - 'sync': 同步模式，调用后会阻塞直到收到响应
-            - 'async': 异步模式，调用后立即返回一个 Coroutine，需 await
-            - 'token': 令牌模式，调用后立即返回一个 WaitToken，后续可 .wait() 或 await
+        切换发送模式并返回 ``self``（支持链式调用），mode 可选值：
+
+            - ``'sync'``:  同步模式，调用后会阻塞直到收到响应
+            - ``'async'``: 异步模式，调用后立即返回一个 Coroutine，需 await
+            - ``'token'``: 令牌模式，调用后立即返回一个 WaitToken，后续可 .wait() 或 await
+
+        配合窄化函数使用，可获得完善的类型提示::
+
+            api.mode('token')
+            token = as_token(api.some_method())   # WaitToken[dict]
+
+        :return: self（支持链式调用）
         """
         if mode == 'sync':
             self.send = self._send_and_wait_sync
@@ -67,6 +165,7 @@ class ApiModule:
             self._now_mode = 'token'
         else:
             raise ValueError(f"Invalid mode: {mode}")
+        return self
 
     def get_now_mode(self) -> str:
         return self._now_mode

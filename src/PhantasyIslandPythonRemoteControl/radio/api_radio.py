@@ -33,6 +33,11 @@ class RadioApi(ApiModule):
             'position': position,
         })
 
+    def getObjectPos(self, objectId: str) -> SendResult[dict]:
+        return self.send('radio.updateObjectPos', data={
+            'objectId': objectId,
+        }, post_processor=lambda d: d.get('position'))
+
     def updateMeshRadioMaterial(self, meshId: str, materialId: typing.Optional[str],
                                 thickness_m: typing.Optional[float]) -> SendResult[dict]:
         return self.send('radio.updateMeshRadioMaterial', data={

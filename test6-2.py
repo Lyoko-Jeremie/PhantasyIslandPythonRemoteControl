@@ -56,12 +56,12 @@ async def main_async():
     m.flush()
 
     airplane_ids = [
-        'COM3',
-        'COM4',
-        'COM5',
-        # 'FH0C:COM3',
-        # 'FH0C:COM4',
-        # 'FH0C:COM5',
+        # 'COM3',
+        # 'COM4',
+        # 'COM5',
+        'FH0C:COM3',
+        'FH0C:COM4',
+        'FH0C:COM5',
     ]
 
     # 并发执行所有飞机的任务

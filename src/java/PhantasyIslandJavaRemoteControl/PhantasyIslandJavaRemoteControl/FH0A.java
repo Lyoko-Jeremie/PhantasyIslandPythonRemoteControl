@@ -1,7 +1,5 @@
 package PhantasyIslandJavaRemoteControl;
 
-import PhantasyIslandJavaRemoteControl.AirplaneManager;
-
 /**
  * 此类是到FH0A库的适配器，是对AirplaneManager的wrapper。
  */

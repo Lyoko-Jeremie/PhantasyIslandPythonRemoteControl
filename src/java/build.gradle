@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+}
+
+group = 'phantasyisland'
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(24)
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            // Keep current project layout without moving source files.
+            srcDirs = ['PhantasyIslandJavaRemoteControl']
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'io.socket:socket.io-client:2.1.1'
+    implementation 'org.json:json:20240303'
+}
+

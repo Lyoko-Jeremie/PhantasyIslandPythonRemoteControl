@@ -11,14 +11,14 @@ import java.util.function.Function;
  */
 public class WaitToken<T> {
     public final String waitCmd;
-    public final int timeBaseId;
+    public final long timeBaseId;
     private Map<String, Object> response = null;
     private T processedResponse = null;
     private final CountDownLatch latch = new CountDownLatch(1);
     private final CompletableFuture<T> future = new CompletableFuture<>();
     private Function<Map<String, Object>, T> postProcessor = null;
 
-    public WaitToken(String waitCmd, int timeBaseId) {
+    public WaitToken(String waitCmd, long timeBaseId) {
         this.waitCmd = waitCmd;
         this.timeBaseId = timeBaseId;
     }

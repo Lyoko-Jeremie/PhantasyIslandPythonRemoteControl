@@ -10,11 +10,11 @@ namespace PhantasyIslandPythonRemoteControl.Radio
         public string WaitCmd { get; }
         public long TimeBaseId { get; }
         public JsonElement? Response { get; private set; }
-        public object ProcessedResponse { get; private set; }
+        public object? ProcessedResponse { get; private set; }
 
         private readonly ManualResetEvent _event = new ManualResetEvent(false);
-        private readonly TaskCompletionSource<object> _tcs = new TaskCompletionSource<object>();
-        private Func<JsonElement, object> _postProcessor;
+        private readonly TaskCompletionSource<object?> _tcs = new TaskCompletionSource<object?>();
+        private Func<JsonElement, object>? _postProcessor;
 
         public WaitToken(string waitCmd, long timeBaseId)
         {
@@ -40,6 +40,7 @@ namespace PhantasyIslandPythonRemoteControl.Radio
             {
                 ProcessedResponse = data;
             }
+
             return ProcessedResponse;
         }
 
@@ -51,15 +52,16 @@ namespace PhantasyIslandPythonRemoteControl.Radio
             _tcs.TrySetResult(result);
         }
 
-        public object Wait(TimeSpan timeout)
+        public object? Wait(TimeSpan timeout)
         {
             if (_event.WaitOne(timeout))
             {
                 return ProcessedResponse;
             }
+
             return null;
         }
 
-        public Task<object> WaitAsync() => _tcs.Task;
+        public Task<object?> WaitAsync() => _tcs.Task;
     }
 }

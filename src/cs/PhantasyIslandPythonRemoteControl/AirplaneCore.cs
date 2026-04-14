@@ -100,7 +100,7 @@ namespace PhantasyIslandPythonRemoteControl
                     _nowLoadingId = _cmdIdCounter;
                     _imageInstance = new ImageInfo
                     {
-                        Img = null, // In C# we'd decode base64 if needed
+                        Img = ImageProcess.ReadB64Img(_airplane.GetCameraFrontImg()),
                         Id = _cmdIdCounter,
                         TotalCount = 300
                     };
@@ -114,6 +114,7 @@ namespace PhantasyIslandPythonRemoteControl
                         if (_imageInstance.ProgressCount >= _imageInstance.TotalCount) break;
                         _imageInstance.ProgressCount++;
                     }
+
                     progressCallback?.Invoke(_imageInstance.ProgressCount, _imageInstance.TotalCount);
                     Task.Delay(10).Wait();
                 }

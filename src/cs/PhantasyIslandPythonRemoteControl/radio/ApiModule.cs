@@ -25,6 +25,7 @@ namespace PhantasyIslandPythonRemoteControl.Radio
             {
                 throw new ArgumentException($"Invalid mode: {mode}");
             }
+
             return this;
         }
 
@@ -35,9 +36,9 @@ namespace PhantasyIslandPythonRemoteControl.Radio
             _rm.InternalSend(cmd, data);
         }
 
-        protected object SendInternal(string cmd, Dictionary<string, object> data = null, 
-                                     string waitCmd = null, double timeout = 3.0,
-                                     Func<JsonElement, object> postProcessor = null)
+        protected object? SendInternal(string cmd, Dictionary<string, object>? data = null,
+            string? waitCmd = null, double timeout = 3.0,
+            Func<JsonElement, object>? postProcessor = null)
         {
             switch (_nowMode)
             {

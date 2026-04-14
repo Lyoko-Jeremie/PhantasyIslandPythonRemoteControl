@@ -75,6 +75,7 @@ namespace PhantasyIslandPythonRemoteControl.Radio
                     dict[name] = val;
                 }
             }
+
             return dict;
         }
     }
@@ -103,6 +104,7 @@ namespace PhantasyIslandPythonRemoteControl.Radio
                     dict[name] = val;
                 }
             }
+
             return dict;
         }
     }

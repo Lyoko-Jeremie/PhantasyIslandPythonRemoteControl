@@ -24,7 +24,8 @@ namespace PhantasyIslandPythonRemoteControl
             else
             {
                 // Synchronous wrapper (basic implementation)
-                _sendCmdFn = s => Task.Run(() => (fastMode ? HttpLayer.SendCmdVolatile(s) : HttpLayer.SendCmd(s)).Result);
+                _sendCmdFn = s =>
+                    Task.Run(() => (fastMode ? HttpLayer.SendCmdVolatile(s) : HttpLayer.SendCmd(s)).Result);
             }
         }
 
@@ -72,7 +73,8 @@ namespace PhantasyIslandPythonRemoteControl
 
     public class AirplaneManager
     {
-        public Dictionary<string, AirplaneController> AirplanesTable { get; } = new Dictionary<string, AirplaneController>();
+        public Dictionary<string, AirplaneController> AirplanesTable { get; } =
+            new Dictionary<string, AirplaneController>();
 
         public async Task<JsonElement?> Ping() => await HttpLayer.Ping();
         public async Task<JsonElement?> Start() => await HttpLayer.Start();
@@ -86,7 +88,7 @@ namespace PhantasyIslandPythonRemoteControl
         {
             var statusJson = await HttpLayer.GetAllAirplaneStatus();
             if (statusJson == null) return;
-            
+
             var airplaneStatus = HttpLayer.ProcessAirplane(statusJson.Value);
             if (airplaneStatus == null) return;
 
@@ -152,5 +154,7 @@ namespace PhantasyIslandPythonRemoteControl
         public void Hover(string port) => P(port).Hover().Wait();
     }
 
-    public class FH0A : UAV { }
+    public class FH0A : UAV
+    {
+    }
 }

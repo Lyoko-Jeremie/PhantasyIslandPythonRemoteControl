@@ -11,8 +11,8 @@ namespace PhantasyIslandPythonRemoteControl.Radio
 {
     public class RadioManager
     {
-        public SocketIO Socket { get; private set; }
-        public string Namespace { get; private set; }
+        public SocketIO? Socket { get; private set; }
+        public string Namespace { get; private set; } = "/UserSide";
         public bool IsSceneInit { get; private set; }
 
         public DebugApi DebugApi { get; }
@@ -20,7 +20,9 @@ namespace PhantasyIslandPythonRemoteControl.Radio
         public FlyApi FlyApi { get; }
         public RadioApi RadioApi { get; }
 
-        private readonly ConcurrentDictionary<string, List<WeakReference<WaitToken>>> _pendingWaiters = new ConcurrentDictionary<string, List<WeakReference<WaitToken>>>();
+        private readonly ConcurrentDictionary<string, List<WeakReference<WaitToken>>> _pendingWaiters =
+            new ConcurrentDictionary<string, List<WeakReference<WaitToken>>>();
+
         private readonly object _waitersLock = new object();
 
         public long CreateMsgTimestampId()
@@ -41,12 +43,8 @@ namespace PhantasyIslandPythonRemoteControl.Radio
         {
             Namespace = ns;
             Reset();
-            
-            Socket = new SocketIO(url, new SocketIOOptions
-            {
-                EIO = EngineIO.V4,
-                Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
-            });
+
+            Socket = new SocketIO(url);
 
             InitListener();
             await Socket.ConnectAsync();
@@ -58,11 +56,14 @@ namespace PhantasyIslandPythonRemoteControl.Radio
             {
                 Socket.DisconnectAsync().Wait();
             }
+
             IsSceneInit = false;
         }
 
         private void InitListener()
         {
+            if (Socket == null) return;
+
             Socket.OnConnected += (sender, e) =>
             {
                 Console.WriteLine("[RadioManager] connected");
@@ -94,18 +95,31 @@ namespace PhantasyIslandPythonRemoteControl.Radio
             return SendAndWaitSync("ping", waitCmd: "pong");
         }
 
-        internal void InternalSend(string cmd, Dictionary<string, object> data = null)
+        private void OnSceneReset(JsonElement data)
+        {
+            Console.WriteLine($"[RadioManager] handle sceneReset: {data}");
+            IsSceneInit = false;
+        }
+
+        private void OnSceneInit(JsonElement data)
+        {
+            Console.WriteLine($"[RadioManager] handle sceneInit: {data}");
+            IsSceneInit = true;
+        }
+
+        internal void InternalSend(string cmd, Dictionary<string, object>? data = null)
         {
             var msg = new Dictionary<string, object> { ["cmd"] = cmd };
             if (data != null)
             {
                 foreach (var kv in data) msg[kv.Key] = kv.Value;
             }
-            Socket.EmitAsync("message", msg).Wait();
+
+            Socket?.EmitAsync("message", msg).Wait();
         }
 
-        public WaitToken SendWithToken(string cmd, Dictionary<string, object> data = null, 
-                                     string waitCmd = null, Func<JsonElement, object> postProcessor = null)
+        public WaitToken SendWithToken(string cmd, Dictionary<string, object>? data = null,
+            string? waitCmd = null, Func<JsonElement, object>? postProcessor = null)
         {
             waitCmd ??= cmd;
             long timeBaseId = CreateMsgTimestampId();
@@ -131,17 +145,17 @@ namespace PhantasyIslandPythonRemoteControl.Radio
             return token;
         }
 
-        public object SendAndWaitSync(string cmd, Dictionary<string, object> data = null, 
-                                     string waitCmd = null, double timeout = 3.0,
-                                     Func<JsonElement, object> postProcessor = null)
+        public object? SendAndWaitSync(string cmd, Dictionary<string, object>? data = null,
+            string? waitCmd = null, double timeout = 3.0,
+            Func<JsonElement, object>? postProcessor = null)
         {
             var token = SendWithToken(cmd, data, waitCmd, postProcessor);
             return token.Wait(TimeSpan.FromSeconds(timeout));
         }
 
-        public async Task<object> SendAndWaitAsync(string cmd, Dictionary<string, object> data = null, 
-                                                  string waitCmd = null, double timeout = 3.0,
-                                                  Func<JsonElement, object> postProcessor = null)
+        public async Task<object?> SendAndWaitAsync(string cmd, Dictionary<string, object>? data = null,
+            string? waitCmd = null, double timeout = 3.0,
+            Func<JsonElement, object>? postProcessor = null)
         {
             var token = SendWithToken(cmd, data, waitCmd, postProcessor);
             var task = token.WaitAsync();
@@ -149,12 +163,13 @@ namespace PhantasyIslandPythonRemoteControl.Radio
             {
                 return await task;
             }
+
             return null;
         }
 
-        private bool NotifyWaiters(string cmd, JsonElement data)
+        private bool NotifyWaiters(string? cmd, JsonElement data)
         {
-            if (!data.TryGetProperty("timestampIdPython", out var tsProp)) return false;
+            if (cmd == null || !data.TryGetProperty("timestampIdPython", out var tsProp)) return false;
             long timestampId = tsProp.GetInt64();
 
             lock (_waitersLock)
@@ -188,8 +203,13 @@ namespace PhantasyIslandPythonRemoteControl.Radio
 
         private void MsgDispatch(JsonElement data)
         {
-            if (!data.TryGetProperty("cmd", out var cmdProp)) return;
-            string cmd = cmdProp.GetString();
+            if (!data.TryGetProperty("cmd", out var cmdProp))
+            {
+                Console.WriteLine($"[RadioManager] received message without cmd: {data}");
+                return;
+            }
+
+            string? cmd = cmdProp.GetString();
 
             if (NotifyWaiters(cmd, data)) return;
 
@@ -198,22 +218,16 @@ namespace PhantasyIslandPythonRemoteControl.Radio
                 case "pong": break;
                 case "sceneReset":
                 case "sceneNotInit":
-                    IsSceneInit = false;
+                    OnSceneReset(data);
                     break;
                 case "sceneInit":
                 case "sceneIsInit":
-                    IsSceneInit = true;
+                    OnSceneInit(data);
                     break;
                 default:
-                    Console.WriteLine($"[RadioManager] unknown cmd: {cmd}");
+                    Console.WriteLine($"[RadioManager] unknown cmd: {cmd}, data: {data}");
                     break;
             }
         }
     }
-
-    // Placeholder classes for the sub-APIs
-    public class DebugApi : ApiModule { public DebugApi(RadioManager rm) : base(rm) { } }
-    public class SceneApi : ApiModule { public SceneApi(RadioManager rm) : base(rm) { } }
-    public class FlyApi : ApiModule { public FlyApi(RadioManager rm) : base(rm) { } }
-    public class RadioApi : ApiModule { public RadioApi(RadioManager rm) : base(rm) { } }
 }

@@ -12,7 +12,9 @@ namespace PhantasyIslandPythonRemoteControl.Radio
 
         public XYZ(double x, double y, double z)
         {
-            X = x; Y = y; Z = z;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
         public List<double> ToList() => new List<double> { X, Y, Z };
@@ -47,20 +49,22 @@ namespace PhantasyIslandPythonRemoteControl.Radio
             foreach (var prop in GetType().GetProperties())
             {
                 var val = prop.GetValue(this);
-                if (val != null)
+                if (val != null && prop.Name != "ToDict")
                 {
                     string name = char.ToLower(prop.Name[0]) + prop.Name.Substring(1);
-                    dict[name] = val;
+                    if (val is XYZ xyz) dict[name] = xyz.ToList();
+                    else dict[name] = val;
                 }
             }
+
             return dict;
         }
     }
 
     public class RadioMaterialProperties
     {
-        public string Id { get; set; }
-        public string DisplayName { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
         public double PenetrationLoss_dBPerMeter { get; set; }
         public double ReflectionCoefficient { get; set; }
         public double DefaultThickness_m { get; set; }

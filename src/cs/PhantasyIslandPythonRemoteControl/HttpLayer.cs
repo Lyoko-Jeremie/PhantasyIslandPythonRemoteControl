@@ -19,7 +19,8 @@ namespace PhantasyIslandPythonRemoteControl
         {
             try
             {
-                var response = await _httpClient.GetStringAsync($"http://{Config.RemoteLocation}/ECU_HTTP/sendStringCmd?c={s}");
+                var response =
+                    await _httpClient.GetStringAsync($"http://{Config.RemoteLocation}/ECU_HTTP/sendStringCmd?c={s}");
                 return JsonSerializer.Deserialize<JsonElement>(response);
             }
             catch (Exception e)
@@ -33,7 +34,8 @@ namespace PhantasyIslandPythonRemoteControl
         {
             try
             {
-                var response = await _httpClient.GetStringAsync($"http://{Config.RemoteLocation}/ECU_HTTP/sendStringCmd?cc={s}");
+                var response =
+                    await _httpClient.GetStringAsync($"http://{Config.RemoteLocation}/ECU_HTTP/sendStringCmd?cc={s}");
                 return JsonSerializer.Deserialize<JsonElement>(response);
             }
             catch (Exception e)
@@ -47,7 +49,9 @@ namespace PhantasyIslandPythonRemoteControl
         {
             try
             {
-                var response = await _httpClient.GetStringAsync($"http://{Config.RemoteLocation}/ECU_HTTP/requestPullAllAirplaneState");
+                var response =
+                    await _httpClient.GetStringAsync(
+                        $"http://{Config.RemoteLocation}/ECU_HTTP/requestPullAllAirplaneState");
                 return JsonSerializer.Deserialize<JsonElement>(response);
             }
             catch (Exception e)
@@ -61,12 +65,14 @@ namespace PhantasyIslandPythonRemoteControl
         {
             try
             {
-                var response = await _httpClient.GetStringAsync($"http://{Config.RemoteLocation}/ECU_HTTP/requestPullImage?flyPort={port}&imageType={camera}");
+                var response = await _httpClient.GetStringAsync(
+                    $"http://{Config.RemoteLocation}/ECU_HTTP/requestPullImage?flyPort={port}&imageType={camera}");
                 var json = JsonSerializer.Deserialize<JsonElement>(response);
                 if (json.GetProperty("ok").GetBoolean())
                 {
                     return json.GetProperty("imgDataString").GetString();
                 }
+
                 return null;
             }
             catch (Exception e)
@@ -91,13 +97,20 @@ namespace PhantasyIslandPythonRemoteControl
                         ["typeName"] = air.GetProperty("typeName").GetString(),
                         ["updateTimestamp"] = air.GetProperty("updateTimestamp").GetDouble(),
                         ["status"] = air.GetProperty("status"),
-                        ["cameraFront"] = air.GetProperty("cameraFront").TryGetProperty("imgDataString", out var frontImg) ? frontImg.GetString() : null,
-                        ["cameraDown"] = air.GetProperty("cameraDown").TryGetProperty("imgDataString", out var downImg) ? downImg.GetString() : null
+                        ["cameraFront"] =
+                            air.GetProperty("cameraFront").TryGetProperty("imgDataString", out var frontImg)
+                                ? frontImg.GetString()
+                                : null,
+                        ["cameraDown"] = air.GetProperty("cameraDown").TryGetProperty("imgDataString", out var downImg)
+                            ? downImg.GetString()
+                            : null
                     };
                     airplaneStatus[keyName] = status;
                 }
+
                 return airplaneStatus;
             }
+
             return null;
         }
     }

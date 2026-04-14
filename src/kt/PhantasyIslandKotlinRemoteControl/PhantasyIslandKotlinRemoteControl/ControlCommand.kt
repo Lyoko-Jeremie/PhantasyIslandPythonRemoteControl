@@ -1,7 +1,6 @@
 package PhantasyIslandKotlinRemoteControl
 
 import java.util.concurrent.Executors
-import java.util.concurrent.Future
 
 open class AirplaneController(
     keyName: String,

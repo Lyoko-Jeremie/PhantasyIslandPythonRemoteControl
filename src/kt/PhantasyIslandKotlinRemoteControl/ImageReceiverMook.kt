@@ -50,10 +50,13 @@ class ImageReceiver(private val airplane: AirplaneCore) {
         }
 
         while (true) {
-            val (currentProgress, currentTotal, currentId) = lock.readLock().withLock {
-                val inst = imageInstance ?: return@thread
-                Triple(inst.progressCount, inst.totalCount, inst.id)
-            }
+            val snapshot = lock.readLock().withLock {
+                imageInstance?.let {
+                    Triple(it.progressCount, it.totalCount, it.id)
+                }
+            } ?: return
+
+            val (currentProgress, currentTotal, currentId) = snapshot
 
             if (currentProgress >= currentTotal || currentId != nowLoadingId) {
                 break

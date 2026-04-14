@@ -6,6 +6,6 @@ package PhantasyIslandKotlinRemoteControl.radio
 class DebugApi(rm: RadioManager) : ApiModule(rm) {
     /** Ping 远端，等待 pong 回复。 */
     fun ping(): Any? {
-        return send("ping", waitCmd = "pong")
+        return send<Any?>("ping", waitCmd = "pong")
     }
 }

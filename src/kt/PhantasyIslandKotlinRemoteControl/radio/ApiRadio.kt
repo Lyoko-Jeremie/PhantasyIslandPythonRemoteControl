@@ -18,11 +18,11 @@ class RadioApi(rm: RadioManager) : ApiModule(rm) {
         data["aTx"] = aTx.toList()
         data["bRx"] = bRx.toList()
         options?.let { data["options"] = it.toJSONObject().toMap() }
-        return send("radio.checkReachability", data = data)
+        return send<Any?>("radio.checkReachability", data = data)
     }
 
     fun updateObjectPos(objectId: String, position: XYZ): Any? {
-        return send("radio.updateObjectPos", data = mapOf(
+        return send<Any?>("radio.updateObjectPos", data = mapOf(
             "objectId" to objectId,
             "position" to position.toList()
         ))
@@ -39,7 +39,7 @@ class RadioApi(rm: RadioManager) : ApiModule(rm) {
         data["meshId"] = meshId
         materialId?.let { data["materialId"] = it }
         thicknessM?.let { data["thickness_m"] = it }
-        return send("radio.updateMeshRadioMaterial", data = data)
+        return send<Any?>("radio.updateMeshRadioMaterial", data = data)
     }
 
     fun getAllRadioMaterial(): Any? {
@@ -57,11 +57,11 @@ class RadioApi(rm: RadioManager) : ApiModule(rm) {
     }
 
     fun getBuildingRadioMaterial(): Any? {
-        return send("radio.getBuildingRadioMaterial")
+        return send<Any?>("radio.getBuildingRadioMaterial")
     }
 
     fun addRadioMaterial(material: RadioMaterialProperties): Any? {
-        return send("radio.addRadioMaterial", data = material.toJSONObject().toMap())
+        return send<Any?>("radio.addRadioMaterial", data = material.toJSONObject().toMap())
     }
 
     fun listRadioLocalObjectsIds(): Any? {

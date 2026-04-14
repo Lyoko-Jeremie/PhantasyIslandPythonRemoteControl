@@ -6,18 +6,18 @@ package PhantasyIslandKotlinRemoteControl.radio
 class FlyApi(rm: RadioManager) : ApiModule(rm) {
 
     fun listFlyObject(): Any? {
-        return send("fly.listFlyObject")
+        return send<Any?>("fly.listFlyObject")
     }
 
     fun getFlyObjectInfo(keyName: String): Any? {
-        return send("fly.getFlyObjectInfo", data = mapOf("keyName" to keyName))
+        return send<Any?>("fly.getFlyObjectInfo", data = mapOf("keyName" to keyName))
     }
 
     fun getFlyObjectCameraImageDown(keyName: String): Any? {
-        return send("fly.getFlyObjectCameraImageDown", data = mapOf("keyName" to keyName))
+        return send<Any?>("fly.getFlyObjectCameraImageDown", data = mapOf("keyName" to keyName))
     }
 
     fun getFlyObjectCameraImageFront(keyName: String): Any? {
-        return send("fly.getFlyObjectCameraImageFront", data = mapOf("keyName" to keyName))
+        return send<Any?>("fly.getFlyObjectCameraImageFront", data = mapOf("keyName" to keyName))
     }
 }

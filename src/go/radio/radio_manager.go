@@ -7,7 +7,8 @@ import (
 	"sync"
 	"time"
 
-	socketio "github.com/googollee/go-socket.io"
+	gosocketio "github.com/graarh/golang-socketio"
+	"github.com/graarh/golang-socketio/transport"
 )
 
 // WaiterRef 模拟弱引用。在 Go 中没有直接的弱引用，
@@ -17,7 +18,7 @@ type WaiterRef struct {
 }
 
 type RadioManager struct {
-	client      *socketio.Client // 这里假设使用某个 go-socket.io 客户端库
+	client      *gosocketio.Client
 	Namespace   string
 	SceneIsInit bool
 
@@ -33,7 +34,7 @@ type RadioManager struct {
 
 func NewRadioManager() *RadioManager {
 	rm := &RadioManager{
-		Namespace:      "/UserSide",
+		Namespace:      "",
 		SceneIsInit:    false,
 		pendingWaiters: make(map[string][]*WaitToken),
 	}
@@ -49,15 +50,25 @@ func (rm *RadioManager) CreateMsgTimestampID() int64 {
 }
 
 func (rm *RadioManager) Connect(url string, namespace string) error {
-	// 实际连接逻辑取决于所选的 socket.io 库
+	var err error
+	rm.client, err = gosocketio.Dial(url, transport.GetDefaultWebsocketTransport())
+	if err != nil {
+		return err
+	}
+
 	rm.Namespace = namespace
 	rm.initListener()
-	fmt.Printf("[RadioManager] Connecting to %s%s\n", url, namespace)
+	fmt.Printf("[RadioManager] Connected to %s%s\n", url, namespace)
 	return nil
 }
 
 func (rm *RadioManager) initListener() {
-	// 注册各种事件回调
+	rm.client.On("message", func(c *gosocketio.Channel, data map[string]interface{}) {
+		rm.MsgDispatch(data)
+	})
+
+	// 如果服务端发送的是命名事件（比如 "message" 或自定义事件名），需要在这里注册
+	// 假设我们的协议是所有消息都通过特定的 Namespace 发送
 }
 
 func (rm *RadioManager) Ping() interface{} {
@@ -65,12 +76,21 @@ func (rm *RadioManager) Ping() interface{} {
 }
 
 func (rm *RadioManager) Send(cmd string, data map[string]interface{}) {
+	if rm.client == nil {
+		fmt.Println("[RadioManager] Error: client is not connected")
+		return
+	}
+
 	msg := make(map[string]interface{})
 	msg["cmd"] = cmd
 	for k, v := range data {
 		msg[k] = v
 	}
-	// 执行发送逻辑
+
+	err := rm.client.Emit("message", msg)
+	if err != nil {
+		fmt.Printf("[RadioManager] Error emitting message: %v\n", err)
+	}
 }
 
 func (rm *RadioManager) SendWithToken(cmd string, data map[string]interface{}, waitCmd string, postProcessor func(map[string]interface{}) interface{}) *WaitToken {

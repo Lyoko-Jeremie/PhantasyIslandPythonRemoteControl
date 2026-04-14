@@ -41,7 +41,8 @@ impl AirplaneController {
     }
 
     fn prepare_command(&mut self, command: &str) -> String {
-        format!("{} {} {}", self.core.key_name, self.next_count(), command)
+        let count = self.next_count();
+        format!("{} {} {}", self.core.key_name, count, command)
     }
 
     fn send_cmd(&mut self, command: &str) -> Value {

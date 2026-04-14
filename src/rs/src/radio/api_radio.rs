@@ -1,6 +1,6 @@
 use crate::radio::api_module::{ApiModule, SendResult};
 use crate::radio::type_def::{XYZ, RadioCheckOptions, RadioMaterialProperties};
-use serde_json::{json, Value};
+use serde_json::json;
 
 pub struct RadioApi {
     pub base: ApiModule,

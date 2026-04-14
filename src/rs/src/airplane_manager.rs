@@ -49,7 +49,7 @@ impl AirplaneManager {
                         status.get("keyName").and_then(|v| v.as_str()).unwrap_or("").to_string(),
                         status.get("typeName").and_then(|v| v.as_str()).unwrap_or("").to_string(),
                         status.get("updateTimestamp").and_then(|v| v.as_i64()).unwrap_or(0),
-                        make_airplane_fly_status(status.get("status").and_then(|v| v.as_object()).unwrap_or(&serde_json::Map::new()).iter().map(|(k,v)| (k.clone(), v.clone())).collect::<HashMap<_,_>>().as_ref()), // 简化处理
+                        make_airplane_fly_status(&status.get("status").and_then(|v| v.as_object()).unwrap_or(&serde_json::Map::new()).iter().map(|(k,v)| (k.clone(), v.clone())).collect::<HashMap<_,_>>()),
                         status.get("cameraFront").and_then(|v| v.as_str()).unwrap_or("").to_string(),
                         status.get("cameraDown").and_then(|v| v.as_str()).unwrap_or("").to_string(),
                     );
@@ -61,7 +61,7 @@ impl AirplaneManager {
                         a.core.update_timestamp = status.get("updateTimestamp").and_then(|v| v.as_i64()).unwrap_or(0);
                         // 这里需要将 Value 转换为 HashMap 再传给 make_airplane_fly_status，或者直接解析
                         // 为了简化初步实现，这里假设 status["status"] 可以解析
-                        if let Some(s_val) = status.get("status") {
+                        if let Some(_s_val) = status.get("status") {
                             // 实际应用中需要更严谨的转换
                         }
                         a.core.camera_front = status.get("cameraFront").and_then(|v| v.as_str()).unwrap_or("").to_string();

@@ -4,6 +4,7 @@ use serde_json::Value;
 use crate::radio::radio_manager::RadioManager;
 use crate::radio::wait_token::WaitToken;
 
+#[derive(Debug)]
 pub enum SendResult {
     Sync(Option<Value>),
     Token(Arc<WaitToken>),

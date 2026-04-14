@@ -57,7 +57,7 @@ impl RadioManager {
         let rm_clone = Arc::clone(self);
         let namespace = self.namespace.clone();
         
-        let client = ClientBuilder::new(url)
+        let _client = ClientBuilder::new(url)
             .namespace(&namespace)
             .on("connect", move |_, _| {
                 println!("[RadioManager] connected");
@@ -74,9 +74,16 @@ impl RadioManager {
             .on("message", {
                 let rm_clone2 = Arc::clone(self);
                 move |payload, _| {
-                    if let Payload::Json(data) = payload {
-                        println!("[RadioManager] message: {:?}", data);
-                        rm_clone2.msg_dispatch(data);
+                    match payload {
+                        Payload::String(value) => {
+                             println!("[RadioManager] message: {:?}", value);
+                             if let Ok(data) = serde_json::from_str::<Value>(&value) {
+                                 rm_clone2.msg_dispatch(data);
+                             }
+                        }
+                        Payload::Binary(bin_data) => {
+                             println!("[RadioManager] binary message received: {:?}", bin_data);
+                        }
                     }
                 }
             })

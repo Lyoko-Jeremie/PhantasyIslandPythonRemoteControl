@@ -1,6 +1,5 @@
 use crate::radio::radio_manager::RadioManager;
 use crate::radio::api_module::SendResult;
-use std::time::Duration;
 
 pub fn debug_radio() {
     let rm = RadioManager::new();
@@ -8,9 +7,9 @@ pub fn debug_radio() {
 
     println!("{}", rm.create_msg_timestamp_id());
 
-    match rm.ping() {
-        Some(res) => println!("Ping result: {:?}", res),
-        None => println!("Ping timeout"),
+    match rm.debug_api.ping() {
+        SendResult::Sync(Some(res)) => println!("Ping result: {:?}", res),
+        _ => println!("Ping failed or token mode used"),
     }
 
     match rm.radio_api.list_radio_local_objects_ids() {

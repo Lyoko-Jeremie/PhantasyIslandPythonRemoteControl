@@ -1,4 +1,4 @@
-use crate::airplane_manager::{get_airplane_manager, AirplaneManager};
+use crate::airplane_manager::get_airplane_manager;
 use std::thread;
 use std::time::Duration;
 

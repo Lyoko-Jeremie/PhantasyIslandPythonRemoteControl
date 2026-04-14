@@ -1,3 +1,4 @@
+use std::fmt;
 use std::sync::{Arc, Mutex, Condvar};
 use std::time::Duration;
 use serde_json::Value;
@@ -12,6 +13,17 @@ pub struct WaitTokenInner {
 pub struct WaitToken {
     pub inner: Arc<(Mutex<WaitTokenInner>, Condvar)>,
     pub post_processor: Option<Box<dyn Fn(Value) -> Value + Send + Sync>>,
+}
+
+impl fmt::Debug for WaitToken {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let inner = self.inner.0.lock().unwrap();
+        f.debug_struct("WaitToken")
+            .field("wait_cmd", &inner.wait_cmd)
+            .field("time_base_id", &inner.time_base_id)
+            .field("done", &inner.done)
+            .finish()
+    }
 }
 
 impl WaitToken {

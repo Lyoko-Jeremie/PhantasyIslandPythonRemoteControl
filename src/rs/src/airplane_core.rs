@@ -69,8 +69,8 @@ impl AirplaneCore {
     /// 拍照
     pub fn cap_image<F1, F2>(&self, user_receive_callback: Option<F1>, user_progress_callback: Option<F2>)
     where
-        F1: Fn(Vec<u8>) + 'static,
-        F2: Fn(i32, i32) + 'static,
+        F1: Fn(Vec<u8>) + Send + 'static,
+        F2: Fn(i32, i32) + Send + 'static,
     {
         self.image_receiver.send_cap_image(user_receive_callback, user_progress_callback);
     }

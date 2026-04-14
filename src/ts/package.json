@@ -1,0 +1,12 @@
+{
+  "name": "PhantasyIslandPythonRemoteControl",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@types/node": "^25.6.0",
+    "socket.io-client": "^4.8.3",
+    "typescript": "^5.9.3"
+  }
+}

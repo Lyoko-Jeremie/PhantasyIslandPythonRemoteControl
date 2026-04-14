@@ -1,6 +1,6 @@
-import {ApiModule, SendResult} from './apiModule';
-import {ViewMaterialChangeCommand, ViewMaterialChangeCommandSimple} from './typeDefView';
-import {XYZ} from './typeDef';
+import {ApiModule, type SendResult} from './apiModule';
+import type{ViewMaterialChangeCommand, ViewMaterialChangeCommandSimple} from './typeDefView';
+import type {XYZ} from './typeDef';
 
 export class SceneApi extends ApiModule {
     listAllMeshObjectInScene(): SendResult<any> {

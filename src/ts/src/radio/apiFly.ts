@@ -1,4 +1,4 @@
-import {ApiModule, SendResult} from './apiModule';
+import {ApiModule, type SendResult} from './apiModule';
 
 export class FlyApi extends ApiModule {
     listFlyObject(): SendResult<any> {

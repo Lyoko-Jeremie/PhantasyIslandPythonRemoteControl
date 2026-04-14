@@ -1,5 +1,5 @@
-import {ApiModule, SendResult} from './apiModule';
-import {XYZ, RadioCheckOptions, RadioMaterialProperties} from './typeDef';
+import {ApiModule, type SendResult} from './apiModule';
+import type {XYZ, RadioCheckOptions, RadioMaterialProperties} from './typeDef';
 
 export class RadioApi extends ApiModule {
     isSceneInit(): SendResult<boolean> {

@@ -20,6 +20,6 @@ export function readB64Img(uri: string | null): string | null {
 export function decodeBase64ToBuffer(uri: string): Buffer | null {
     if (!uri) return null;
     const parts = uri.split(',');
-    const b64 = parts.length > 1 ? parts[1] : parts[0];
+    const b64 = parts.length > 1 ? parts[1] as string : parts[0] as string;
     return Buffer.from(b64, 'base64');
 }

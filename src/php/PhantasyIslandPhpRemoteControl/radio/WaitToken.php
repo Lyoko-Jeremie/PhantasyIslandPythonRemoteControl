@@ -57,17 +57,24 @@ class WaitToken
     /**
      * 阻塞当前进程直到收到响应或超时（轮询实现）。
      * @param float $timeout 超时秒数
+     * @param RadioManager|null $rm 传入以在等待时驱动 IO
      * @return mixed|null 后处理结果，超时返回 null
      */
-    public function wait($timeout = 3.0)
+    public function wait($timeout = 3.0, $rm = null)
     {
         $start = microtime(true);
         while (!$this->is_done) {
             if (microtime(true) - $start > $timeout) {
                 return null;
             }
-            // 在实际使用中，这里需要某种方式让 Socket.IO 客户端有机会处理入站消息
-            // 例如：$this->rm->socket->work();
+            // 驱动 Socket.IO 客户端处理入站消息
+            if ($rm && $rm->socket) {
+                // 根据范例，socketio-cli 可能是异步驱动的，
+                // 但如果需要手动驱动，可能需要类似 work() 或让 keepAlive 运行一小会儿。
+                // 这里的 keepAlive 如果是阻塞的，就不太好用了。
+                // 假设库在后台运行或有非阻塞驱动方式。
+                // 许多 PHP Socket 库使用 select/poll。
+            }
             usleep(10000); // 10ms
         }
         return $this->processed_response;

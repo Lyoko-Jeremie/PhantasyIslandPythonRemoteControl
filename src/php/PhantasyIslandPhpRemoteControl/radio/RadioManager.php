@@ -42,11 +42,22 @@ class RadioManager
     public function connect($url = 'http://127.0.0.1:60002', $namespace = '/UserSide')
     {
         $this->namespace = $namespace;
-        // 在此处初始化 Socket.IO 连接并设置回调
-        // $this->socket = new Client($url);
-        // $this->socket->on('message', [$this, 'msg_dispatch']);
-        // $this->socket->connect();
-        $this->check_scene_status();
+        // 使用 socketio-cli
+        $this->socket = new \SocketIO\Client();
+        $this->socket->client($url)
+            ->of($this->namespace)
+            ->connection(function() {
+                // 连接成功后的回调
+                $this->socket->on('message', [$this, 'msg_dispatch']);
+                $this->check_scene_status();
+            });
+    }
+
+    public function wait($timeout = 30)
+    {
+        if ($this->socket) {
+            $this->socket->keepAlive($timeout);
+        }
     }
 
     private function check_scene_status()
@@ -69,7 +80,9 @@ class RadioManager
         if ($data) {
             $msg = array_merge($msg, $data);
         }
-        // $this->socket->emit('message', $msg, $this->namespace);
+        if ($this->socket) {
+            $this->socket->emit('message', $msg);
+        }
     }
 
     /**
@@ -104,7 +117,7 @@ class RadioManager
     public function _send_and_wait_sync($cmd, $data = null, $wait_cmd = null, $timeout = 3.0, $post_processor = null)
     {
         $token = $this->_send_with_token($cmd, $data, $wait_cmd, $post_processor);
-        return $token->wait($timeout);
+        return $token->wait($timeout, $this);
     }
 
     public function _send_and_wait_token($cmd, $data = null, $wait_cmd = null, $post_processor = null)

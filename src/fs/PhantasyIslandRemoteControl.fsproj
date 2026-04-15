@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Config.fs" />
+    <Compile Include="WaitToken.fs" />
+    <Compile Include="TypeDef.fs" />
+    <Compile Include="TypeDefView.fs" />
+    <Compile Include="ApiModule.fs" />
+    <Compile Include="Apis.fs" />
+    <Compile Include="RadioManager.fs" />
+    <Compile Include="ImageProcess.fs" />
+    <Compile Include="HttpLayer.fs" />
+    <Compile Include="AirplaneCore.fs" />
+    <Compile Include="UAV.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SocketIOClient" Version="3.1.2" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
+  </ItemGroup>
+
+</Project>

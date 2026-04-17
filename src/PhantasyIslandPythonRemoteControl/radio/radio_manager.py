@@ -13,6 +13,7 @@ from .api_debug import DebugApi
 from .api_scene import SceneApi
 from .api_fly import FlyApi
 from .api_radio import RadioApi
+from .api_restricted_area import RestrictedAreaApi
 
 
 class RadioManager:
@@ -26,6 +27,7 @@ class RadioManager:
     sceneApi: SceneApi
     flyApi: FlyApi
     radioApi: RadioApi
+    restrictedAreaApi: RestrictedAreaApi
 
     # wait_cmd -> list[weakref.ref[WaitToken]]
     _pending_waiters: typing.Dict[str, typing.List[weakref.ReferenceType[WaitToken]]]
@@ -48,6 +50,7 @@ class RadioManager:
         self.sceneApi = SceneApi(self)
         self.flyApi = FlyApi(self)
         self.radioApi = RadioApi(self)
+        self.restrictedAreaApi = RestrictedAreaApi(self)
         pass
 
     def connect(self, url='http://127.0.0.1:60002', namespace='/UserSide'):

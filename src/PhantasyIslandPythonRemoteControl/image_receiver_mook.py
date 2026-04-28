@@ -44,35 +44,48 @@ class ImageReceiver:
     ):
 
         def mook_receive_thread():
-            # get it in a thread and make a sleep with progress
+            # get it in a thread and use deadline clock to control total duration
+            start_time = time.monotonic()
+            end_time = start_time + self.mook_time
+            total_count = self.mook_time * 100  # logical total steps
+
             with self._lock:
                 self._cmd_id_counter += 1
                 self.now_loading_id = self._cmd_id_counter
                 self.image_instance = ImageInfo(
                     img=self.airplane.get_camera_down_img(),
                     id=self._cmd_id_counter,
-                    total_count=self.mook_time * 100,   # time.sleep(0.01)
+                    total_count=total_count,
                 )
 
-            while self.image_instance.progress_count < self.image_instance.total_count:
-                time.sleep(0.01)
+            current_id = self.image_instance.id
+
+            while True:
+                now = time.monotonic()
+                elapsed = now - start_time
+                new_progress = min(int(elapsed / self.mook_time * total_count), total_count)
+
                 with self._lock:
                     if self.image_instance.id != self.now_loading_id:
-                        break
-                    self.image_instance.progress_count += 1
-                    pass
+                        return
+                    self.image_instance.progress_count = new_progress
 
                 if self.user_progress_callback:
-                    self.user_progress_callback(self.image_instance.progress_count, self.image_instance.total_count)
-                pass
+                    self.user_progress_callback(new_progress, total_count)
+
+                if now >= end_time:
+                    break
+
+                # sleep until next tick or deadline, whichever comes first
+                remaining = end_time - now
+                time.sleep(min(0.01, remaining))
 
             with self._lock:
                 if self.image_instance.id == self.now_loading_id:
+                    self.image_instance.progress_count = total_count
                     self.image_instance.ok = True
-                    pass
-                pass
 
-            if self.image_instance.id == self.now_loading_id and self.image_instance.progress_count >= self.image_instance.total_count and self.user_receive_callback:
+            if self.image_instance.id == current_id and self.user_receive_callback:
                 self.user_receive_callback(self.image_instance.img)
 
             pass

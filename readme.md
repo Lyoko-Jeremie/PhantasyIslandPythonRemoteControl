@@ -14,6 +14,8 @@ pip install -r requirements.txt
 
 ---
 
+主要语言实现： Python : `src/PhantasyIslandPythonRemoteControl`
+
 ## 其他语言的 port
 
 已实现并通过编译测试：

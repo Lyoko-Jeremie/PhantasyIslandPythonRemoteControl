@@ -5,6 +5,36 @@ from src.PhantasyIslandPythonRemoteControl import get_airplane_manager
 from src.PhantasyIslandPythonRemoteControl.airplane_manager import AirplaneManager
 from src.PhantasyIslandPythonRemoteControl.control_command import AirplaneController
 
+# ================= 控制参数配置 =================
+IMAGE_SIZE_X = 640
+IMAGE_SIZE_Y = 480
+
+# 图像处理参数
+THRESHOLD_VALUE = 127          # 二值化阈值
+
+# 目标检测像素统计阈值
+TOTAL_PIXEL_MIN = 0            # 目标像素总数下限
+TOTAL_PIXEL_MAX = 600          # 目标像素总数上限（超过此值可能认为距离太近或干扰）
+FORWARD_PIXEL_MAX = 500        # 允许前进的最大像素计数
+
+# 目标在投影图中的尺寸阈值
+HOR_TARGET_SIZE_MAX = 60       # 水平投影中目标宽度的像素上限
+VER_TARGET_SIZE_MAX = 70       # 垂直投影中目标高度的像素上限
+
+# 屏幕中心对准范围（像素坐标）
+# 垂直方向中心范围（控制上下 Up/Down）
+CENTER_Y_MIN = IMAGE_SIZE_Y // 2 - 20
+CENTER_Y_MAX = IMAGE_SIZE_Y // 2 + 20
+
+# 水平方向中心范围（控制左右 Left/Right）
+CENTER_X_MIN = IMAGE_SIZE_X // 2 - 20
+CENTER_X_MAX = IMAGE_SIZE_X // 2 + 20
+
+# 控制步长
+MOVE_STEP = 5                  # 前后左右移动的步长
+ROTATE_STEP = 1                # 旋转的步长
+# ===============================================
+
 
 def control_rotate(a: AirplaneController, count: int):
     """
@@ -15,8 +45,8 @@ def control_rotate(a: AirplaneController, count: int):
     :param count:int: 确定旋转的像素阈值条件（在此逻辑中，count<=0时触发旋转）
     :return: 布尔值，旋转成功返回 True，失败返回 False
     """
-    if count <= 0:
-        if a.rotate(1) is not None:
+    if count <= TOTAL_PIXEL_MIN:
+        if a.rotate(ROTATE_STEP) is not None:
             # cv2.waitKey(10)
             return True
         else:
@@ -36,27 +66,27 @@ def control_hor(a: AirplaneController, count: int, h_img: np.array):
     :return: 如果无人机已对准中心返回 False（停止后续调整），否则返回 True
     """
     """"""
-    if 0 < count < 600:
+    if TOTAL_PIXEL_MIN < count < TOTAL_PIXEL_MAX:
         # 获取水平投影的最右侧两列数据
         h_img = hor_project(h_img)[::, h_img.shape[1] - 2::]
         # 计算反转后的非零像素（即投影中的目标宽度）
         h_count = cv2.countNonZero(cv2.bitwise_not(h_img))
-        if 0 < h_count < 60:
+        if 0 < h_count < HOR_TARGET_SIZE_MAX:
             for i in range(h_img.shape[0] - 1):
                 # 寻找投影边缘：从有像素到无像素的跃变点
                 if (h_img[i - 1, 0] > 0) and (h_img[i, 0] == 0):
                     # 计算目标在垂直方向上的中心点位置
                     center_y = (i + h_count + i) // 2
-                    # 检查是否在目标范围 [100, 140] 内
-                    if 100 <= center_y <= 140:
+                    # 检查是否在目标范围内
+                    if CENTER_Y_MIN <= center_y <= CENTER_Y_MAX:
                         return False
-                    elif center_y < 100:
+                    elif center_y < CENTER_Y_MIN:
                         # 目标偏上，控制无人机上升
-                        if a.up(5) is not None:
+                        if a.up(MOVE_STEP) is not None:
                             break
-                    elif center_y > 140:
+                    elif center_y > CENTER_Y_MAX:
                         # 目标偏下，控制无人机下降
-                        if a.down(5) is not None:
+                        if a.down(MOVE_STEP) is not None:
                             break
                     else:
                         break
@@ -75,27 +105,27 @@ def control_ver(a: AirplaneController, count: int, v_img: np.array):
     :param v_img:np.array: 存储垂直方向投影后的图像
     :return: 如果无人机已对准中心返回 False，否则返回 True
     """
-    if 0 < count < 600:
+    if TOTAL_PIXEL_MIN < count < TOTAL_PIXEL_MAX:
         # 获取垂直投影的最下方两行数据
         v_img = ver_project(v_img)[v_img.shape[0] - 2::, ::]
         # 计算反转后的非零像素（即投影中的目标高度）
         v_count = cv2.countNonZero(cv2.bitwise_not(v_img))
-        if 0 < v_count < 70:
+        if 0 < v_count < VER_TARGET_SIZE_MAX:
             for i in range(v_img.shape[1] - 1):
                 # 寻找投影边缘：从有像素到无像素的跃变点
                 if (v_img[0, i - 1] > 0) and (v_img[0, i] == 0):
                     # 计算目标在水平方向上的中心点位置
                     center_x = (i + v_count + i) // 2
-                    # 检查是否在目标范围 [140, 180] 内
-                    if 140 <= center_x <= 180:
+                    # 检查是否在目标范围内
+                    if CENTER_X_MIN <= center_x <= CENTER_X_MAX:
                         return False
-                    elif center_x < 140:
+                    elif center_x < CENTER_X_MIN:
                         # 目标偏左，控制无人机向左平移
-                        if a.left(5) is not None:
+                        if a.left(MOVE_STEP) is not None:
                             break
-                    elif center_x > 180:
+                    elif center_x > CENTER_X_MAX:
                         # 目标偏右，控制无人机向右平移
-                        if a.right(5) is not None:
+                        if a.right(MOVE_STEP) is not None:
                             break
                     else:
                         break
@@ -113,8 +143,8 @@ def control_forward(a: AirplaneController, count: int):
     :param count:int: 像素计数阈值
     :return: 布尔值，前进成功返回 True，否则返回 False
     """
-    if 0 < count < 500:
-        if a.forward(5) is not None:
+    if TOTAL_PIXEL_MIN < count < FORWARD_PIXEL_MAX:
+        if a.forward(MOVE_STEP) is not None:
             # cv2.waitKey(10)
             return True
     else:
@@ -205,7 +235,7 @@ def main():
                 b, g, r = cv2.split(f_img)
                 br = cv2.subtract(b, r)
                 # 二值化处理
-                t, br_t = cv2.threshold(br, 127, 255, cv2.THRESH_BINARY)
+                t, br_t = cv2.threshold(br, THRESHOLD_VALUE, 255, cv2.THRESH_BINARY)
                 # 计算目标像素点总数
                 count = cv2.countNonZero(br_t)
                 

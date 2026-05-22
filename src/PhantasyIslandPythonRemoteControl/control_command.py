@@ -54,12 +54,22 @@ class AirplaneController(AirplaneCore):
 
     def _send_cmd(self, command: str) -> str:
         f = self._send_cmd_fn
-        # 如果是 method，则需要手动传入 self 参数 (因为之前赋值的是 unbound method 或 instance method)
-        # 但实际上，如果 self._send_cmd_fn = self._send_cmd_future, 那么 f 已经是 bound method 了。
-        # 如果 self._send_cmd_fn = send_cmd, 那么 f 是普通函数。
-        # 统一处理：如果是 bound method，直接调用；如果是普通函数且第一个参数不是 self，也直接调用。
-        # 这里的 send_cmd 函数定义在 http_layer.py 中，它不接受 self。
-        return f(self._prepare_command(command))
+        arg = self._prepare_command(command)
+        # 统一处理：如果是 bound method，直接调用；
+        # 如果调用失败（通常是因为它是被 Python 自动绑定的外部函数，不接受 self），
+        # 则尝试调用其原始函数 __func__ 或直接调用。
+        try:
+            return f(arg)
+        except TypeError as e:
+            # 如果是 bound method 且报错 "takes 1 positional argument but 2 were given"
+            if hasattr(f, "__func__"):
+                return f.__func__(arg)
+            # 如果是 unbound method 且报错 "missing 1 required positional argument: 's'"
+            # 或者其他情况，尝试传入 self
+            try:
+                return f(self, arg)
+            except:
+                raise e
 
     def mode(self, mode: int):
         """

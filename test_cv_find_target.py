@@ -290,7 +290,7 @@ if __name__ == '__main__':
 
     # 'COM4', 'COM5'
 
-    for port in ['COM3']:
+    for port in ['FH0A:COM3']:
         p = Process(target=process_cv, args=(port, m,))
         p.start()
 

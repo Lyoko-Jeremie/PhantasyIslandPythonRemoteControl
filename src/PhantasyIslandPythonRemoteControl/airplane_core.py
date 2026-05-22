@@ -52,11 +52,12 @@ class AirplaneCore(object):
     cameraDown: str
 
     # 声明字段，且不让其参与 __init__
-    image_receiver: ImageReceiver = dataclasses.field(init=False)
+    image_receiver: ImageReceiver = dataclasses.field(init=False, default=None)
 
     def __post_init__(self):
         # 在这里实例化，此时可以安全地将 self 传给 ImageReceiver
-        self.image_receiver = ImageReceiver(self)
+        if self.image_receiver is None:
+            self.image_receiver = ImageReceiver(self)
         pass
 
     def cap_image(

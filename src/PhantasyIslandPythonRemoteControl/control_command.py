@@ -10,7 +10,7 @@ class AirplaneController(AirplaneCore):
     """
     count: int = 1
 
-    _send_cmd_fn = staticmethod(send_cmd)
+    _send_cmd_fn = send_cmd
 
     _executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
 
@@ -29,15 +29,21 @@ class AirplaneController(AirplaneCore):
         if not future_mode:
             if fast_mode:
                 # https://stackoverflow.com/questions/55527175/how-do-i-remove-implicit-passing-of-self-in-python-class
-                self._send_cmd_fn = staticmethod(send_cmd_volatile)
+                self._send_cmd_fn = send_cmd_volatile
             else:
-                self._send_cmd_fn = staticmethod(send_cmd)
+                self._send_cmd_fn = send_cmd
             pass
         else:
             if fast_mode:
-                self._send_cmd_fn = lambda s: self._executor.submit(send_cmd_volatile, s)
+                self._send_cmd_fn = self._send_cmd_future_volatile
             else:
-                self._send_cmd_fn = lambda s: self._executor.submit(send_cmd, s)
+                self._send_cmd_fn = self._send_cmd_future
+    
+    def _send_cmd_future_volatile(self, s):
+        return self._executor.submit(send_cmd_volatile, s)
+
+    def _send_cmd_future(self, s):
+        return self._executor.submit(send_cmd, s)
 
     def _next_count(self):
         self.count = self.count + 2
@@ -48,6 +54,11 @@ class AirplaneController(AirplaneCore):
 
     def _send_cmd(self, command: str) -> str:
         f = self._send_cmd_fn
+        # 如果是 method，则需要手动传入 self 参数 (因为之前赋值的是 unbound method 或 instance method)
+        # 但实际上，如果 self._send_cmd_fn = self._send_cmd_future, 那么 f 已经是 bound method 了。
+        # 如果 self._send_cmd_fn = send_cmd, 那么 f 是普通函数。
+        # 统一处理：如果是 bound method，直接调用；如果是普通函数且第一个参数不是 self，也直接调用。
+        # 这里的 send_cmd 函数定义在 http_layer.py 中，它不接受 self。
         return f(self._prepare_command(command))
 
     def mode(self, mode: int):

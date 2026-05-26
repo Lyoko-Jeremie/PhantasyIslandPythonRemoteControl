@@ -9,6 +9,11 @@ def handle_image(airplane_id, img):
     print(f"[{airplane_id}] Async image received: {len(img)} bytes")
 
 
+async def goto(a, f, x, y, h):
+    a.goto(x, y, h)
+    f.goto(x, y, h)
+
+
 # 异步飞行任务
 async def async_flight_mission(manager, airplane_id):
     a: AirplaneController = manager.get_airplane(airplane_id)

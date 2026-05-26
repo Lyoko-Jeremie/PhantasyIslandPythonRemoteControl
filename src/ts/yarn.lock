@@ -5,10 +5,147 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
+"@oven/bun-darwin-aarch64@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-darwin-aarch64@npm:1.3.14"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-darwin-x64-baseline@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-darwin-x64-baseline@npm:1.3.14"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-darwin-x64@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-darwin-x64@npm:1.3.14"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-freebsd-aarch64@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-freebsd-aarch64@npm:1.3.14"
+  conditions: os=freebsd & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-freebsd-x64@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-freebsd-x64@npm:1.3.14"
+  conditions: os=freebsd & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-linux-aarch64-android@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-linux-aarch64-android@npm:1.3.14"
+  conditions: os=android & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-linux-aarch64-musl@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-linux-aarch64-musl@npm:1.3.14"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-linux-aarch64@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-linux-aarch64@npm:1.3.14"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-linux-x64-android@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-linux-x64-android@npm:1.3.14"
+  conditions: os=android & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-linux-x64-baseline@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-linux-x64-baseline@npm:1.3.14"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-linux-x64-musl-baseline@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-linux-x64-musl-baseline@npm:1.3.14"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-linux-x64-musl@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-linux-x64-musl@npm:1.3.14"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-linux-x64@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-linux-x64@npm:1.3.14"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-windows-aarch64@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-windows-aarch64@npm:1.3.14"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-windows-x64-baseline@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-windows-x64-baseline@npm:1.3.14"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oven/bun-windows-x64@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@oven/bun-windows-x64@npm:1.3.14"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@socket.io/component-emitter@npm:~3.1.0":
   version: 3.1.2
   resolution: "@socket.io/component-emitter@npm:3.1.2"
   checksum: 10c0/c4242bad66f67e6f7b712733d25b43cbb9e19a595c8701c3ad99cbeb5901555f78b095e24852f862fffb43e96f1d8552e62def885ca82ae1bb05da3668fd87d7
+  languageName: node
+  linkType: hard
+
+"@types/bun@npm:^1":
+  version: 1.3.14
+  resolution: "@types/bun@npm:1.3.14"
+  dependencies:
+    bun-types: "npm:1.3.14"
+  checksum: 10c0/5531e17062f48da00d7d1e70bae8252fb5b61f6d699505ace74e60a1cecbafd624cc9d1694500857f261822c00e75fcbad9269f91adee790d6240875d46bb3f9
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:^4":
+  version: 4.17.24
+  resolution: "@types/lodash@npm:4.17.24"
+  checksum: 10c0/b72f60d4daacdad1fa643edb3faba204c02a01eb1ac00a83ff73496a6d236fc55e459c06106e8ced42277dba932d087d8fc090f8de4ef590d3f91e6d6f7ce85a
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:*":
+  version: 25.9.1
+  resolution: "@types/node@npm:25.9.1"
+  dependencies:
+    undici-types: "npm:>=7.24.0 <7.24.7"
+  checksum: 10c0/9a04682842bebbcf21a1779dfeab9aa733d7bd7bbc0a0edb641ab3a9a3d43eac543225acf669c334f458f1956443ebc072bc3c72840c543b8b356cab5c82d456
   languageName: node
   linkType: hard
 
@@ -25,11 +162,90 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "PhantasyIslandPythonRemoteControl@workspace:."
   dependencies:
+    "@types/bun": "npm:^1"
+    "@types/lodash": "npm:^4"
     "@types/node": "npm:^25.6.0"
+    bun: "npm:^1.3.14"
+    json5: "npm:^2.2.3"
+    lodash: "npm:^4.18.1"
+    moment: "npm:^2.30.1"
     socket.io-client: "npm:^4.8.3"
+    tsafe: "npm:^1.8.12"
+    typebox: "npm:^1.1.38"
     typescript: "npm:^5.9.3"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
+
+"bun-types@npm:1.3.14":
+  version: 1.3.14
+  resolution: "bun-types@npm:1.3.14"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/5aef8b13d6a0c0f218b5995aa74148c6a2536639a94560bbc80ee1b50a6ce05f011c93052340c7bf3469b9705af70737ff9d5cd7eb8ebbd49dbb8f55ed3eaeaf
+  languageName: node
+  linkType: hard
+
+"bun@npm:^1.3.14":
+  version: 1.3.14
+  resolution: "bun@npm:1.3.14"
+  dependencies:
+    "@oven/bun-darwin-aarch64": "npm:1.3.14"
+    "@oven/bun-darwin-x64": "npm:1.3.14"
+    "@oven/bun-darwin-x64-baseline": "npm:1.3.14"
+    "@oven/bun-freebsd-aarch64": "npm:1.3.14"
+    "@oven/bun-freebsd-x64": "npm:1.3.14"
+    "@oven/bun-linux-aarch64": "npm:1.3.14"
+    "@oven/bun-linux-aarch64-android": "npm:1.3.14"
+    "@oven/bun-linux-aarch64-musl": "npm:1.3.14"
+    "@oven/bun-linux-x64": "npm:1.3.14"
+    "@oven/bun-linux-x64-android": "npm:1.3.14"
+    "@oven/bun-linux-x64-baseline": "npm:1.3.14"
+    "@oven/bun-linux-x64-musl": "npm:1.3.14"
+    "@oven/bun-linux-x64-musl-baseline": "npm:1.3.14"
+    "@oven/bun-windows-aarch64": "npm:1.3.14"
+    "@oven/bun-windows-x64": "npm:1.3.14"
+    "@oven/bun-windows-x64-baseline": "npm:1.3.14"
+  dependenciesMeta:
+    "@oven/bun-darwin-aarch64":
+      optional: true
+    "@oven/bun-darwin-x64":
+      optional: true
+    "@oven/bun-darwin-x64-baseline":
+      optional: true
+    "@oven/bun-freebsd-aarch64":
+      optional: true
+    "@oven/bun-freebsd-x64":
+      optional: true
+    "@oven/bun-linux-aarch64":
+      optional: true
+    "@oven/bun-linux-aarch64-android":
+      optional: true
+    "@oven/bun-linux-aarch64-musl":
+      optional: true
+    "@oven/bun-linux-x64":
+      optional: true
+    "@oven/bun-linux-x64-android":
+      optional: true
+    "@oven/bun-linux-x64-baseline":
+      optional: true
+    "@oven/bun-linux-x64-musl":
+      optional: true
+    "@oven/bun-linux-x64-musl-baseline":
+      optional: true
+    "@oven/bun-windows-aarch64":
+      optional: true
+    "@oven/bun-windows-x64":
+      optional: true
+    "@oven/bun-windows-x64-baseline":
+      optional: true
+  bin:
+    bun: bin/bun.exe
+    bunx: bin/bunx.exe
+  checksum: 10c0/5b31f48ffccb95ade37e1d4eae75860ae4c76d711986928d6851f3b101539d6248167c4db7fee362d5e680c9015dc05d7b267f247e307d8e5fe4a839dc37d9d5
+  conditions: (os=darwin | os=linux | os=android | os=freebsd | os=win32) & (cpu=arm64 | cpu=x64)
+  languageName: node
+  linkType: hard
 
 "debug@npm:~4.4.1":
   version: 4.4.3
@@ -63,6 +279,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"json5@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "json5@npm:2.2.3"
+  bin:
+    json5: lib/cli.js
+  checksum: 10c0/5a04eed94810fa55c5ea138b2f7a5c12b97c3750bc63d11e511dcecbfef758003861522a070c2272764ee0f4e3e323862f386945aeb5b85b87ee43f084ba586c
+  languageName: node
+  linkType: hard
+
+"lodash@npm:^4.18.1":
+  version: 4.18.1
+  resolution: "lodash@npm:4.18.1"
+  checksum: 10c0/757228fc68805c59789e82185135cf85f05d0b2d3d54631d680ca79ec21944ec8314d4533639a14b8bcfbd97a517e78960933041a5af17ecb693ec6eecb99a27
+  languageName: node
+  linkType: hard
+
+"moment@npm:^2.30.1":
+  version: 2.30.1
+  resolution: "moment@npm:2.30.1"
+  checksum: 10c0/865e4279418c6de666fca7786607705fd0189d8a7b7624e2e56be99290ac846f90878a6f602e34b4e0455c549b85385b1baf9966845962b313699e7cb847543a
+  languageName: node
+  linkType: hard
+
 "ms@npm:^2.1.3":
   version: 2.1.3
   resolution: "ms@npm:2.1.3"
@@ -92,6 +331,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tsafe@npm:^1.8.12":
+  version: 1.8.12
+  resolution: "tsafe@npm:1.8.12"
+  checksum: 10c0/382b1e2eb8d92007a05bb137b1557839eb4770c944b2f1db767af4451e1f2b03aa7c2803867c634dfd557ebc887bdd9dcca98a3118921320c2cb4caa0bd68c2b
+  languageName: node
+  linkType: hard
+
+"typebox@npm:^1.1.38":
+  version: 1.1.38
+  resolution: "typebox@npm:1.1.38"
+  checksum: 10c0/b4a5996a25b9265e88335a75697630be82822fae5e7b1993d5eb52ac6b71e80fec924ffa1976269a05524a0954b3f9e6e52f380348ea6836f76920e556fa3ca1
+  languageName: node
+  linkType: hard
+
 "typescript@npm:^5.9.3":
   version: 5.9.3
   resolution: "typescript@npm:5.9.3"
@@ -112,10 +365,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"undici-types@npm:>=7.24.0 <7.24.7":
+  version: 7.24.6
+  resolution: "undici-types@npm:7.24.6"
+  checksum: 10c0/d9cd8befb643ac904615c280a095ba4240531f6bb4a5e75a22a7483630ca8d3f1016d2ab6ace6ceda1f63b3a2db2fe037fafe121d6917a0187573aa548ff78ca
+  languageName: node
+  linkType: hard
+
 "undici-types@npm:~7.19.0":
   version: 7.19.2
   resolution: "undici-types@npm:7.19.2"
   checksum: 10c0/7159f10546f9f6c47d36776bb1bbf8671e87c1e587a6fee84ae1f111ae8de4f914efa8ca0dfcd224f4f4a9dfc3f6028f627ccb5ddaccf82d7fd54671b89fac3e
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "uuid@npm:14.0.0"
+  bin:
+    uuid: dist-node/bin/uuid
+  checksum: 10c0/a57ae7794c45005c1a9208989196c5baf79a7679c30f43c1bee9033a2c4d113a2cea216fa6fcc9663b08b0d55635df1a7c6eb7e7f3d21c3e50688c698fa39a50
   languageName: node
   linkType: hard
 

@@ -4,8 +4,7 @@ import {SceneApi} from './apiScene';
 import {FlyApi} from './apiFly';
 import {RadioApi} from './apiRadio';
 
-// 假设使用 socket.io-client
-// import { io, Socket } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 export class RadioManager {
     socketio: any; // Socket
@@ -37,9 +36,8 @@ export class RadioManager {
         this.namespace = namespace;
         this.reset();
 
-        // 模拟 socket.io 连接逻辑
-        // this.socketio = io(`${url}${namespace}`, { reconnection: true });
-        // this._initListener();
+        this.socketio = io(`${url}${namespace}`, { reconnection: true });
+        this._initListener();
 
         return new Promise((resolve) => {
             // 假设连接成功

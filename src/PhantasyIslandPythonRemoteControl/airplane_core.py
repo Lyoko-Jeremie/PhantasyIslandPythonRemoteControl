@@ -2,8 +2,8 @@ import dataclasses
 import typing
 from typing import Dict
 
-from .http_layer import get_airplane_camera_image
-from .image_process import read_b64_img
+from .http_layer import get_airplane_camera_image, get_airplane_camera_depth_image, get_airplane_camera_depth_32_data
+from .image_process import read_b64_img, decode_base64_float32
 from .image_receiver_mook import ImageReceiver
 
 
@@ -102,6 +102,42 @@ class AirplaneCore(object):
         """
         # return read_b64_img(self.cameraDown)
         return read_b64_img(get_airplane_camera_image(self.keyName, 'down'))
+        pass
+
+    def get_camera_front_depth_img(self):
+        """
+        获取前置摄像头图像
+        :return:  cv2::Mat | None
+        """
+        # return read_b64_img(self.cameraFront)
+        return read_b64_img(get_airplane_camera_depth_image(self.keyName, 'front'))
+        pass
+
+    def get_camera_down_depth_img(self):
+        """
+        获取下置摄像头图像
+        :return:  cv2::Mat | None
+        """
+        # return read_b64_img(self.cameraDown)
+        return read_b64_img(get_airplane_camera_depth_image(self.keyName, 'down'))
+        pass
+
+    def get_camera_front_depth_32_data(self):
+        """
+        获取前置摄像头图像
+        :return:  cv2::Mat | None
+        """
+        # return read_b64_img(self.cameraFront)
+        return decode_base64_float32(get_airplane_camera_depth_32_data(self.keyName, 'front'))
+        pass
+
+    def get_camera_down_depth_32_data(self):
+        """
+        获取下置摄像头图像
+        :return:  cv2::Mat | None
+        """
+        # return read_b64_img(self.cameraDown)
+        return decode_base64_float32(get_airplane_camera_depth_32_data(self.keyName, 'down'))
         pass
 
     pass

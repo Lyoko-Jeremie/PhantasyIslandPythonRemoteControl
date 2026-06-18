@@ -26,3 +26,27 @@ def read_b64_img(uri: str | None) -> cv2.Mat | None:
     im_arr = np.frombuffer(im_bytes, dtype=np.uint8)  # im_arr is one-dim Numpy array
     img = cv2.imdecode(im_arr, flags=cv2.IMREAD_COLOR)
     return img
+
+def decode_base64_float32(uri: str | None) -> np.ndarray | None:
+    """
+    // --- DESERIALIZE ---
+    // 1. Decode Base64 back to a binary string
+    const binarySign = atob(base64String);
+    // 2. Re-populate a Uint8Array
+    const decodedBytes = new Uint8Array(binarySign.length);
+    for (let i = 0; i < binarySign.length; i++) {
+        decodedBytes[i] = binarySign.charCodeAt(i);
+    }
+    // 3. Create the Float32Array pointing to the same buffer
+    const finalFloatArray = new Float32Array(decodedBytes.buffer);
+    """
+    if uri is None:
+        return None
+    if ',' in uri:
+        im_b64 = uri.split(',')[1]
+    else:
+        im_b64 = uri
+    im_bytes = base64.b64decode(im_b64)
+    im_arr = np.frombuffer(im_bytes, dtype=np.float32)
+    return im_arr
+

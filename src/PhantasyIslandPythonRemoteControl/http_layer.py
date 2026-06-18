@@ -115,6 +115,53 @@ def get_airplane_camera_image(port: str, camera: str) -> str | None:
             print(e, file=sys.stderr)
         return None
 
+def get_airplane_camera_depth_image(port: str, camera: str) -> str | None:
+    """
+    获取指定无人机的摄像头图像
+    :param port: 无人机的 keyName
+    :param camera: 'down' 或 'front'
+    :return: str | None 深度图像的 base64 编码字符串，8bit量化
+    """
+    try:
+        r = requests.get('http://' + remote_location + f'/ECU_HTTP/requestPullDepthImage?flyPort={port}&imageType={camera}',
+                         timeout=5)
+        j = json.loads(r.text)
+        if j['ok'] is True:
+            return j['imgDataString']
+        else:
+            return None
+    except requests.exceptions.ConnectionError as e:
+        print('ConnectionError Cannot Connect to PhantasyIsland, Max retries exceeded.', file=sys.stderr)
+        try:
+            print('  ===>>>  ' + str(e.args[0].reason), file=sys.stderr)
+        except:
+            print(e, file=sys.stderr)
+        return None
+
+
+def get_airplane_camera_depth_32_data(port: str, camera: str) -> str | None:
+    """
+    获取指定无人机的摄像头图像
+    :param port: 无人机的 keyName
+    :param camera: 'down' 或 'front'
+    :return: str | None base64 编码的 float32 数据数组，未量化的GPU原始数据，先通过 get_airplane_camera_image 获取图像长宽之后， float32数组的长度就是图像的宽高乘积
+    """
+    try:
+        r = requests.get('http://' + remote_location + f'/ECU_HTTP/requestPullDepth32Image?flyPort={port}&imageType={camera}',
+                         timeout=5)
+        j = json.loads(r.text)
+        if j['ok'] is True:
+            return j['imgDataString']
+        else:
+            return None
+    except requests.exceptions.ConnectionError as e:
+        print('ConnectionError Cannot Connect to PhantasyIsland, Max retries exceeded.', file=sys.stderr)
+        try:
+            print('  ===>>>  ' + str(e.args[0].reason), file=sys.stderr)
+        except:
+            print(e, file=sys.stderr)
+        return None
+
 
 def process_airplane(j: Dict[str, any]):
     if j['ok'] is True:

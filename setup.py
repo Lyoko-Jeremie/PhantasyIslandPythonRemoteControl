@@ -11,7 +11,7 @@ if os.path.isfile(requirementPath):
 
 setuptools.setup(
     name="PhantasyIslandPythonRemoteControl",
-    version="0.3.0",
+    version="0.6.0",
     description="Python Remote Control Tools for PhantasyIsland",
     # https://stackoverflow.com/questions/51286928/what-is-where-argument-for-in-setuptools-find-packages
     # DO NOT pack mock/test (like js) into output
